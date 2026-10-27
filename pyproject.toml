@@ -29,6 +29,10 @@ Changelog = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/b
 Support = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/issues"
 
 [project.optional-dependencies]
+docs = ["sphinx>=7,<9", "furo>=2024.8", "myst-parser>=3,<5",
+        "matplotlib>=3.6", "scikit-learn>=1.4", "PyWavelets>=1.4",
+        "nbformat>=5.9", "nbclient>=0.8", "ipykernel>=6.25",
+        "tomli>=2; python_version < '3.11'"]
 wavelets = ["PyWavelets>=1.4"]
 ml = ["scikit-learn>=1.4"]
 validation = ["scikit-learn>=1.4", "threadpoolctl>=3", "matplotlib>=3.6"]
@@ -38,8 +42,11 @@ dev = ["pytest>=7", "build>=1", "twine>=5", "ruff>=0.9"]
 include-package-data = false
 
 [tool.setuptools.packages.find]
-include = ["protspect", "FFTpro"]
+include = ["protspect", "protspect.examples", "FFTpro"]
 namespaces = false
+
+[tool.setuptools.package-data]
+"protspect.examples" = ["*.ipynb"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

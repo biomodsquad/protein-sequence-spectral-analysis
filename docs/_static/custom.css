@@ -1,0 +1,15 @@
+.hero-actions { display:flex; flex-wrap:wrap; gap:.7rem; margin:1.5rem 0 2rem; }
+.hero-actions a { border-radius:.5rem; padding:.65rem 1rem; font-weight:650; text-decoration:none; border:1px solid var(--color-brand-primary); }
+.hero-actions a.primary-action { background:var(--color-brand-primary); color:var(--color-background-primary); }
+.feature-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.9rem; margin:1.2rem 0; }
+.feature-card { border:1px solid var(--color-background-border); border-radius:.65rem; padding:1rem; }
+.feature-card strong { display:block; margin-bottom:.3rem; }
+.feature-card p { margin:0; }
+article img { border-radius:.4rem; }
+@media(min-width:70rem) { .content { max-width:54rem; } }
+@media(max-width:40rem) { .feature-grid { grid-template-columns:1fr; } }
+
+.sidebar-logo { background:white; border-radius:.4rem; padding:.4rem; max-height:7rem; width:100%; object-fit:contain; box-sizing:border-box; }
+.project-logo { background:white; border-radius:.6rem; padding:.5rem; }
+
+.announcement-content { white-space:normal; line-height:1.45; padding-block:.5rem; }

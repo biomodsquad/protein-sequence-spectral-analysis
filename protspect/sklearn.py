@@ -318,7 +318,7 @@ class SpectralTransformer(SequenceTransformer):
 
     All fitting, transformation, channel preprocessing, and feature extraction
     delegate to SequenceTransformer. The original constructor, closed frequency
-    grid, Amp_/Phase_ feature names, and get_feature_metadata schema are preserved.
+    grid, ``Amp_``/``Phase_`` feature names, and get_feature_metadata schema are preserved.
     New code should use SequenceTransformer for every transform.
     """
 

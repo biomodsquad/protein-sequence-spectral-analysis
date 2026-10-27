@@ -1,0 +1,59 @@
+{
+  "scope": "Protspect documentation, tutorials, and examples",
+  "python": "3.12.2",
+  "versions": {
+    "sphinx": "7.3.7",
+    "furo": "2025.12.19",
+    "numpy": "1.26.4",
+    "scipy": "1.13.1",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "PyWavelets": "1.7.0",
+    "nbformat": "5.10.4",
+    "nbclient": "0.8.0",
+    "myst-parser": "4.0.1"
+  },
+  "html_build": "strict, zero warnings",
+  "doctest_blocks_passed": 15,
+  "local_links_and_assets_checked": 2586,
+  "html_pages_checked": 39,
+  "guided_tutorials": 8,
+  "notebooks": [
+    {
+      "notebook": "01_matrix_to_features.ipynb",
+      "code_cells": 5,
+      "seconds": 11.147,
+      "source_sha256": "8cdeee18c138c68e6d4a9003b7c1b0268190f7c467d1842be6dd66080baad321"
+    },
+    {
+      "notebook": "02_transforms_and_pairs.ipynb",
+      "code_cells": 5,
+      "seconds": 3.156,
+      "source_sha256": "1a08133bbb8705b01ca483b5816aca0ef498d1455a38a397b8de08335cba007f"
+    },
+    {
+      "notebook": "03_fitted_pipeline.ipynb",
+      "code_cells": 4,
+      "seconds": 5.525,
+      "source_sha256": "f5bf01f43755a5e162d40e93a5211e2b75d31e1ef273b4d2dd7b0abc710fe450"
+    }
+  ],
+  "package_tests_passed": 188,
+  "packaging": {
+    "wheel_and_sdist_built": true,
+    "twine_passed": true,
+    "three_notebooks_present_and_readable_from_installed_wheel": true,
+    "generated_preview_outputs_excluded_from_sdist": true
+  },
+  "supplied_artwork": {
+    "docs/_static/protspect-logo.png": {
+      "sha256": "f972f60abaa7d70fbbb9941bf141d879220da6b24180e5b8216d934aca86fb88",
+      "preserved_unchanged": true
+    },
+    "docs/_static/figures/sequence-matrix-spectral-analysis.png": {
+      "sha256": "f3b1c05a14aa749f25bd67589ef2837480a884b0542869d80ad1217d92ff5d57",
+      "preserved_unchanged": true
+    }
+  },
+  "publication": "Local preview and review artifacts only; no public deployment or PyPI release performed"
+}
