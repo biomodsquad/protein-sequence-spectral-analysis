@@ -61,6 +61,17 @@ features = SequenceSet(
 See [AAindex1 loading, explicit downloads, and provenance](docs/AAINDEX.md).
 No database is bundled or downloaded during feature extraction.
 
+AAindex2/3 matrices also support explicit row or column profile channels:
+
+```python
+from protspect.aaindex import AAIndex2
+
+matrices = AAIndex2.from_file(".aaindex/aaindex2")
+embedding = matrices.embedding("HENS920102", axis="rows")  # BLOSUM62
+```
+
+See [matrix conversion and contact-potential interpretation](docs/AAINDEX_MATRICES.md).
+
 ## Generate sequence features
 
 ```python

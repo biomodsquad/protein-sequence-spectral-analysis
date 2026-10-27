@@ -61,3 +61,9 @@ selected vectors, and an independently computed direct DFT.
 
 Load additional scalar residue properties from an official local AAindex1
 file. See [AAindex1 usage and provenance](AAINDEX.md).
+
+## AAindex2 and AAindex3
+
+Substitution and contact-potential matrices can supply canonical row/column
+profile channels. Their axes and direction are explicit; full matrices are
+never forced to symmetry. See [matrix representations](AAINDEX_MATRICES.md).
