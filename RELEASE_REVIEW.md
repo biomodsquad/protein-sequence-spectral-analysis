@@ -139,3 +139,12 @@ test transformation. This is an integration check, not normalization selection.
 `0.1.0a1` was published to production PyPI on 2026-10-27 after all release
 checks passed. See [the production release record](docs/RELEASES.md). Earlier
 review sections describe the work and decisions leading to that release.
+
+
+## Second alpha
+
+`0.1.0a2` was published on 2026-10-27 with all representation, transform, unified
+API, and documentation updates. The pre-merge cross-platform matrix passed;
+TestPyPI and production wheel/source clean-install checks passed. See
+[the release record](docs/RELEASES.md) and
+[recorded artifact environments](validation/release_0.1.0a2.json).
