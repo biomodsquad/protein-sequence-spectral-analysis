@@ -46,12 +46,12 @@
     "generated_preview_outputs_excluded_from_sdist": true
   },
   "supplied_artwork": {
-    "docs/_static/protspect-logo.png": {
-      "sha256": "43c6cdc6c2a00d2e880d6024c741ab58fb1ef63dcb279db27e92903af0acf8da",
-      "preserved_unchanged": true
-    },
     "docs/_static/figures/sequence-matrix-spectral-analysis.png": {
       "sha256": "f3b1c05a14aa749f25bd67589ef2837480a884b0542869d80ad1217d92ff5d57",
+      "preserved_unchanged": true
+    },
+    "docs/_static/protspect-logo-spectrum.png": {
+      "sha256": "43c6cdc6c2a00d2e880d6024c741ab58fb1ef63dcb279db27e92903af0acf8da",
       "preserved_unchanged": true
     }
   },

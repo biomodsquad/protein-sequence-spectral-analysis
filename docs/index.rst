@@ -1,7 +1,7 @@
 Protspect
 =========
 
-.. image:: _static/protspect-logo.png
+.. image:: _static/protspect-logo-spectrum.png
    :alt: Protspect rainbow spectrum wordmark.
    :class: project-logo
    :width: 650px

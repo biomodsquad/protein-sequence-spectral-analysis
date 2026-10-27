@@ -1,6 +1,6 @@
 # Protspect
 
-![Protspect logo](docs/_static/protspect-logo.png)
+![Protspect logo](docs/_static/protspect-logo-spectrum.png)
 
 **Protein sequence spectral analysis**: transform features for proteins and
 peptides using numeric residue-property channels. This is the original sequence
