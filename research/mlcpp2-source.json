@@ -1,0 +1,24 @@
+{
+  "source_page": "https://balalab-skku.org/mlcpp2/download/",
+  "snapshot_date": "2026-10-27",
+  "datasets": {
+    "training": {
+      "url": "https://balalab-skku.org/mlcpp2/download/Layer1_training.txt/txt/",
+      "sha256": "4540306db9193c3061b55f0d4438753ec45440899bd4722b24bec281c51b79f1",
+      "rows": 1146,
+      "classes": {
+        "Positive": 573,
+        "Negative": 573
+      }
+    },
+    "independent": {
+      "url": "https://balalab-skku.org/mlcpp2/download/Layer1_Independent.txt/txt/",
+      "sha256": "98dba8d5fdcb46c6bceb3c2731ddb0a119971b9b7019bb57d222251764b13b99",
+      "rows": 2341,
+      "classes": {
+        "Positive": 157,
+        "Negative": 2184
+      }
+    }
+  }
+}

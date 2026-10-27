@@ -1,0 +1,26 @@
+name: CPP research reproduction
+on:
+  workflow_dispatch:
+jobs:
+  notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create pinned research environment
+        run: |
+          python -m venv .venv-research
+          .venv-research/bin/python -m pip install setuptools==84.2.1 wheel==0.45.1
+          .venv-research/bin/python -m pip install --no-build-isolation -r research/requirements-lock.txt
+          .venv-research/bin/python -m pip install --no-build-isolation --no-deps -e .
+          .venv-research/bin/python -m pip check
+          .venv-research/bin/python -m ipykernel install --prefix .venv-research --name protspect-research
+      - run: .venv-research/bin/python research/prepare_cpp_data.py
+      - run: .venv-research/bin/python -m pytest -q research/tests
+      - run: .venv-research/bin/python research/execute_notebook.py --output-dir validation/cpp_ci_run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpp-research-reproduction
+          path: validation/cpp_ci_run/

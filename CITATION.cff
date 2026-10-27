@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: >-
+  If you use Protspect, cite the software version and commit used,
+  and cite any datasets and external methods separately.
+title: "Protspect: protein sequence spectral analysis"
+type: software
+version: 0.1.0a1
+authors:
+  - name: Biomolecular Systems Modeling and Design Group
+repository-code: "https://github.com/biomodsquad/protein-sequence-spectral-analysis"
+url: "https://github.com/biomodsquad/protein-sequence-spectral-analysis"
+license: BSD-3-Clause
