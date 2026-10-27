@@ -118,9 +118,9 @@ test transformation. This is an integration check, not normalization selection.
 6. **Perform a TestPyPI rehearsal — awaiting account-side publisher setup.**
    Added a TestPyPI-only OIDC workflow and explicit release environment, plus
    hash-verified downloads and clean post-upload installation checks. Candidate
-   build, metadata, tests, and fresh installs passed. TestPyPI rejected the
-   publishing identity with `invalid-publisher` because no matching publisher
-   is registered. Nothing was uploaded. See [rehearsal status and setup](docs/TESTPYPI.md).
+   build, metadata, tests, and fresh installs passed. After publisher registration, authentication passed but TestPyPI rejected
+   upload with a project-name mismatch. The account-side project must match
+   `Protspect`. Nothing was uploaded. See [rehearsal status and setup](docs/TESTPYPI.md).
    Production publishing remains a separate release decision.
 
 ## References

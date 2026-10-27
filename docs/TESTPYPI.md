@@ -52,12 +52,19 @@ for commit `5f18766` passed the candidate job: build, Twine metadata checks,
 75 checkout tests, and fresh core/optional wheel and source installation tests.
 The local macOS CPython 3.12.2 rehearsal also passed both artifact checks.
 
-TestPyPI rejected the OIDC exchange with `invalid-publisher`: no corresponding
-publisher was found for the expected repository, workflow, and environment.
-No upload occurred and post-upload verification was skipped. Configure the
-account-side pending publisher above, then rerun failed jobs for this same run
-to publish the already-tested candidate and perform post-upload verification.
-Do not describe the end-to-end rehearsal as complete until those checks pass.
+The initial attempt failed with `invalid-publisher`. After account-side publisher
+registration, attempt 2 authenticated successfully but TestPyPI rejected upload
+with HTTP 400: the pending publisher's project name does not match the uploaded
+metadata name `Protspect` (spelled P-r-o-t-s-p-e-c-t). The expected project's JSON
+endpoint still returns 404. No distribution upload succeeded; verification was
+skipped.
+
+Check the registered project name in the TestPyPI account. Follow
+[PyPI's project-name mismatch instructions](https://docs.pypi.org/trusted-publishers/troubleshooting/#upload-errors)
+to remove an incorrectly created empty project and recreate the pending
+publisher for `Protspect`. Then rerun failed jobs for the same run to publish
+the already-tested candidate and perform post-upload verification. Do not
+describe the end-to-end rehearsal as complete until those checks pass.
 
 The current candidate is `0.1.0a1`, approved for the initial alpha. Before a
 production release, recheck name availability and finish scientific/release
