@@ -24,13 +24,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api repos/${{ github.repository }}/actions/runs/40537066711 --jq 'select(.conclusion == "success" and .head_sha == "5f18766b78210451cbf682b7670ab9e12767d240") | .id' > rehearsal-id.txt
+          gh api repos/${{ github.repository }}/actions/runs/40589649064 --jq 'select(.conclusion == "success" and .head_sha == "abb28a8bc30ea7bf350f3362836c81f103ffb84f") | .id' > rehearsal-id.txt
           test -s rehearsal-id.txt
-          git diff --exit-code 5f18766 HEAD -- protspect FFTpro pyproject.toml
+          git diff --exit-code abb28a8bc30ea7bf350f3362836c81f103ffb84f HEAD -- protspect FFTpro pyproject.toml
       - uses: actions/download-artifact@v4
         with:
           name: testpypi-candidate
-          run-id: 40537066711
+          run-id: 40589649064
           github-token: ${{ github.token }}
           path: candidate/
       - name: Verify exact rehearsed artifacts against TestPyPI
@@ -112,6 +112,6 @@ jobs:
 
           Includes Kidera factors, AAindex1/2/3 adapters, Fourier/Z/Mellin/wavelet transforms, unified sequence and paired-chain collections, fitted sklearn pipelines, documentation, and bundled tutorial notebooks. Legacy Fourier adapters remain available. Alpha APIs may change.
 
-          Published artifacts are exactly those validated in TestPyPI rehearsal run 40537066711 (candidate commit 5f18766). Production downloads were hash-verified and clean-install tested before creating this prerelease. See CHANGELOG.md and docs/TESTPYPI.md for details.
+          Published artifacts are exactly those validated in TestPyPI rehearsal run 40589649064 (candidate commit abb28a8bc30ea7bf350f3362836c81f103ffb84f). Production downloads were hash-verified and clean-install tested before creating this prerelease. See CHANGELOG.md and docs/TESTPYPI.md for details.
           EOF
           gh release create v0.1.0a2 dist/* --target "${{ github.sha }}" --title 'Protspect 0.1.0a2' --prerelease --notes-file release-notes.md
