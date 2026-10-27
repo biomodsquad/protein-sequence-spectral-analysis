@@ -1,4 +1,39 @@
-# Reproducible CPP research example
+# Research notebooks
+
+## Antimicrobial peptides: four transforms and MLPs
+
+Open [AMP_transform_MLP.ipynb](AMP_transform_MLP.ipynb) for a simple BLOSUM100
+comparison of Fourier, circular Z, finite Mellin, and discrete wavelet features.
+The notebook uses the supplied ABP_GN CSVs (3,562 train / 1,973 test), searches only
+training validation, refits on the full training set, and reports held-out metrics
+and curves. Defaults use seed 7, a 256-position grid, all coefficient magnitudes,
+a common 64-unit MLP, and no transform tuning. This is a different feature policy
+from the earlier dyadic Fourier audit; its scores are not a reproduction of that
+audit. The already-studied test set makes these exploratory comparisons.
+
+Install this development checkout with `python -m pip install -e '.[ml,wavelets,validation]'`.
+For programmatic execution also install `nbformat`, `nbclient`, and `ipykernel`.
+CSV paths default to ignored `research/data/`, then `~/Downloads/input_csv/`;
+edit the notebook controls for other locations. Raw datasets are not distributed.
+
+Run cells in order after editing controls, or execute the defaults from the root:
+
+```sh
+python -m research.execute_amp_notebook \
+  --output validation/amp_transform_mlp/AMP_transform_MLP.executed.ipynb
+```
+
+Use a fresh output notebook path for subsequent runs. Results, trials, input/source
+hashes, split indices, feature names, and row-indexed probabilities are saved to
+fresh timestamped folders under ignored `validation/amp_transform_mlp/`. The
+notebook dependencies/versions are recorded in each report; MISTIC is not needed.
+Mellin extraction and MLP fitting may take several minutes. `MODEL_SEEDS`,
+`MLP_CANDIDATES`, transform controls, and plotting cells are editable. More seeds
+measure fitting variability; homology-aware or external evaluation is a separate
+study. Wavelet magnitudes discard coefficient signs; change its component to
+`real` only as a separately specified experiment. See [transform definitions](../docs/TRANSFORMS.md).
+
+## Reproducible CPP research example
 
 Use [CPP_reproducible.ipynb](CPP_reproducible.ipynb), or run the same logic in
 `cpp_workflow.py`. This replaces the historical exploration as the executable
