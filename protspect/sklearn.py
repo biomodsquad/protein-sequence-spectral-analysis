@@ -278,3 +278,106 @@ class SpectralTransformer(TransformerMixin, BaseEstimator):
             "compute_amplitude": self.compute_amplitude_, "compute_phase": self.compute_phase_,
             "feature_names": self.get_feature_names_out().tolist(),
         }
+
+
+class SequenceTransformer(TransformerMixin, BaseEstimator):
+    """Fixed-width Fourier, Z, Mellin, or wavelet features for sklearn pipelines.
+
+    ``method`` selects fourier, z, mellin, or wavelet; ``component`` selects
+    amplitude, phase, real, or imaginary output. ``embedding`` defaults to BLOSUM100.
+    ``normalization`` and ``center`` act on actual residues before padding.
+    ``transform_options`` is a mapping of keyword arguments to
+    :func:`protspect.transform_sequence` (radius, mellin_c, wavelet, level, mode).
+    ``length`` is learned from training sequences alone when omitted. Longer
+    held-out sequences raise rather than changing the schema. Channel moments
+    are also learned from training residues alone when standardization is enabled.
+    Constructor mutations take effect only on refit; fitted settings are copied.
+    """
+
+    def __init__(self, *, embedding=None, method="fourier", length=None,
+                 normalization="none", center=False, standardize_channels=False,
+                 component="amplitude", transform_options=None):
+        self.embedding = embedding
+        self.method = method
+        self.length = length
+        self.normalization = normalization
+        self.center = center
+        self.standardize_channels = standardize_channels
+        self.component = component
+        self.transform_options = transform_options
+
+    def set_params(self, **params):
+        """Invalidate fitted settings when estimator parameters change."""
+        result = super().set_params(**params)
+        if params:
+            self._clear_fit()
+        return result
+
+    def _clear_fit(self):
+        """Remove fitted state, including after an unsuccessful refit."""
+        for name in list(vars(self)):
+            if name.endswith('_') and not name.startswith('_'):
+                delattr(self, name)
+
+    def fit(self, X, y=None):
+        """Freeze training-only length, embedding, options, and output schema."""
+        from .transforms import transform_sequence
+
+        self._clear_fit()
+        sequences = _sequences(X)
+        length = _length(self.length, max(map(len, sequences)))
+        if not isinstance(self.standardize_channels, (bool, np.bool_)):
+            raise ValueError("standardize_channels must be boolean")
+        embedding = _copy_embedding(b100 if self.embedding is None else self.embedding)
+        means, scales, effective = _channel_statistics(sequences, embedding, self.standardize_channels)
+        options = {} if self.transform_options is None else deepcopy(self.transform_options)
+        allowed = {'radius', 'mellin_c', 'wavelet', 'level', 'mode'}
+        if not isinstance(options, dict) or not set(options) <= allowed:
+            raise ValueError(f"transform_options must be a mapping using {sorted(allowed)}")
+        settings = dict(transform=self.method, length=length,
+                        normalization=self.normalization, center=self.center, **options)
+        names = None
+        for sequence in sequences:
+            result = transform_sequence(sequence, effective, **settings)
+            _, current_names = result.features(self.component)
+            if names is not None and not np.array_equal(names, current_names):
+                raise ValueError("training sequences produced inconsistent feature schemas")
+            names = current_names
+        self.length_ = length
+        self.embedding_, self.effective_embedding_ = embedding, effective
+        self.channel_mean_, self.channel_scale_ = means, scales
+        self.settings_, self.component_ = deepcopy(settings), self.component
+        self.feature_names_out_ = names.copy()
+        self.n_features_out_ = len(names)
+        # Metadata excludes training-sequence-specific residue count.
+        self.transform_metadata_ = {k: deepcopy(v) for k, v in result.metadata.items()
+                                    if k != 'sequence_length'}
+        self.coordinates_ = deepcopy(result.coordinates)
+        return self
+
+    def transform(self, X):
+        """Apply only frozen fitted settings; return channel-major float features."""
+        from .transforms import transform_sequence
+
+        check_is_fitted(self, ['feature_names_out_', 'settings_'])
+        sequences = _sequences(X)
+        rows = []
+        for sequence in sequences:
+            result = transform_sequence(sequence, self.effective_embedding_, **self.settings_)
+            values, names = result.features(self.component_)
+            if not np.array_equal(names, self.feature_names_out_):
+                raise ValueError("computed features do not match the fitted schema")
+            rows.append(values)
+        return np.asarray(rows, dtype=float)
+
+    def fit_transform(self, X, y=None, **fit_params):
+        """Materialize generators once before fitting and transforming."""
+        if fit_params:
+            raise TypeError("fit parameters are not supported")
+        sequences = _sequences(X)
+        return self.fit(sequences, y).transform(sequences)
+
+    def get_feature_names_out(self, input_features=None):
+        """Return fitted feature names in output column order."""
+        check_is_fitted(self, ['feature_names_out_'])
+        return self.feature_names_out_.copy()

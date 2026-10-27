@@ -29,6 +29,7 @@ Changelog = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/b
 Support = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/issues"
 
 [project.optional-dependencies]
+wavelets = ["PyWavelets>=1.4"]
 ml = ["scikit-learn>=1.4"]
 validation = ["scikit-learn>=1.4", "threadpoolctl>=3", "matplotlib>=3.6"]
 dev = ["pytest>=7", "build>=1", "twine>=5", "ruff>=0.9"]
