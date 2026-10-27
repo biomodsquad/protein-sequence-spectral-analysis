@@ -1,0 +1,20 @@
+{
+  "same_code_sha256": "5054948392b9b7cffd05f83126f9d93a01ce8d264d179aa44e6cc6429affda41",
+  "same_environment_fixed_seed_exact_csv_replay": {
+    "aaindex1_representatives_r095.csv": true,
+    "aligned_matrix_score_correlations.csv": true,
+    "aligned_matrix_score_pca.csv": true,
+    "cluster_thresholds.csv": true,
+    "excluded.csv": true,
+    "reference_vector_neighbors.csv": true,
+    "unique_vector_layouts.csv": true,
+    "vector_catalogue.csv": true,
+    "vector_cluster_representatives_r095.csv": true,
+    "whole_cka_equal_channels.csv": true,
+    "whole_cka_native_weights.csv": true,
+    "whole_neighbors_b100.csv": true,
+    "whole_representations.csv": true
+  },
+  "report_json_exact": true,
+  "replay_output": "/private/tmp/protspect-atlas-replay"
+}

@@ -1,0 +1,14 @@
+# Numerical/visualization versions used for this study, CPython 3.12.
+# Top-level pins, not a complete transitive lock. No MISTIC dependency.
+numpy==1.26.4
+scipy==1.13.1
+pandas==2.3.3
+matplotlib==3.9.2
+scikit-learn==1.7.2
+umap-learn==0.5.9.post2
+numba==0.60.0
+llvmlite==0.43.0
+pynndescent==0.5.13
+threadpoolctl==3.5.0
+plotly==5.24.1
+pytest==7.4.4

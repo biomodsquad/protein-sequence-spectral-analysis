@@ -1,0 +1,11 @@
+minimum_similarity,clusters,largest_cluster,scope
+0.8,967,77,vector
+0.9,1589,46,vector
+0.95,2137,41,vector
+0.98,2669,41,vector
+0.99,2974,33,vector
+0.8,242,23,aaindex1
+0.9,353,11,aaindex1
+0.95,436,9,aaindex1
+0.98,499,4,aaindex1
+0.99,524,3,aaindex1
