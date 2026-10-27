@@ -29,7 +29,7 @@ def record(accession='TEST000001', *, values=None, header=HEADER):
 
 def database(tmp_path, text=None, **kwargs):
     path = tmp_path/'aaindex1'
-    path.write_text(record() if text is None else text, encoding='utf-8')
+    path.write_bytes((record() if text is None else text).encode('utf-8'))
     return AAIndex.from_file(path, **kwargs)
 
 
