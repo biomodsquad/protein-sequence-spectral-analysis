@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add all ten Kidera residue-factor channels, with `kidera_factors()` for
+  independent embedding dictionaries and `kidera` for read-only access.
+  BLOSUM100 remains the default. See [representation provenance](docs/REPRESENTATIONS.md).
+
 ## 0.1.0a1 — 2026-10-27
 
 First packaged alpha of Protspect, the protein/peptide spectral featurization
