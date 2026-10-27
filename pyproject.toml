@@ -24,7 +24,7 @@ classifiers = [
 [project.urls]
 Repository = "https://github.com/biomodsquad/protein-sequence-spectral-analysis"
 Issues = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/issues"
-Documentation = "https://github.com/biomodsquad/protein-sequence-spectral-analysis#readme"
+Documentation = "https://biomodsquad.org/protein-sequence-spectral-analysis/"
 Changelog = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/blob/main/CHANGELOG.md"
 Support = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/issues"
 

@@ -13,6 +13,9 @@ Version `0.1.0a1` is the first published alpha; APIs may change.
 
 ## Documentation and tutorials
 
+Read the [online documentation](https://biomodsquad.org/protein-sequence-spectral-analysis/), published as a development
+snapshot of the unified API. The published PyPI alpha predates these additions.
+
 The [documentation source](docs/index.rst) follows the MISTIC Sphinx/Furo layout:
 installation, matrix-based concepts, eight guided tutorials, downloadable
 notebooks, and a public API reference. The supplied logo and matrix illustration
