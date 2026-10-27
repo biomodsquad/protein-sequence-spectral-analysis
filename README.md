@@ -32,6 +32,20 @@ python -m pip install -e '.[dev]'
 The distribution is named `Protspect`. The unrelated `prospect` package is a
 different project.
 
+## Residue representations
+
+The development branch includes the ten Kidera factors (KF1–KF10), in addition
+to the default BLOSUM100 embedding. See [representation documentation and
+citation](docs/REPRESENTATIONS.md). This addition is not in PyPI version 0.1.0a1.
+
+```python
+from protspect import SequenceSet
+from protspect.embeddings import kidera_factors
+
+features = SequenceSet(embedding=kidera_factors(), compute_cross_spectra=False)
+features.from_sequence_list(["ACDE", "ACDF"], spectrum_length=8)
+```
+
 ## Generate sequence features
 
 ```python
