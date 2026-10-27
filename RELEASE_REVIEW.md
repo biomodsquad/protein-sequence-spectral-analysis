@@ -115,12 +115,13 @@ test transformation. This is an integration check, not normalization selection.
    JSON endpoint for `protspect` returned HTTP 404 on 2026-10-27; this does not
    reserve the name or guarantee registration. Recheck immediately before
    upload. A dedicated paired-chain result type remains a future API change.
-6. **Perform a TestPyPI rehearsal.** Configure trusted publishing with explicit
-   release environments; upload the candidate to TestPyPI, install its wheel
-   and sdist in clean environments with dependencies from PyPI, run the
-   examples, and inspect rendered metadata. Publish to production only after
-   scientific and release review. CI currently validates builds but never
-   uploads them.
+6. **Perform a TestPyPI rehearsal — awaiting account-side publisher setup.**
+   Added a TestPyPI-only OIDC workflow and explicit release environment, plus
+   hash-verified downloads and clean post-upload installation checks. Candidate
+   build, metadata, tests, and fresh installs passed. TestPyPI rejected the
+   publishing identity with `invalid-publisher` because no matching publisher
+   is registered. Nothing was uploaded. See [rehearsal status and setup](docs/TESTPYPI.md).
+   Production publishing remains a separate release decision.
 
 ## References
 

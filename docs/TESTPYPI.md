@@ -47,8 +47,17 @@ commit in this document after completion.
 
 ## Status
 
-Account-side pending publisher setup is required before upload. The workflow
-and GitHub environment are prepared; no upload has been verified yet.
+[Rehearsal run 40537066711](https://github.com/biomodsquad/protein-sequence-spectral-analysis/actions/runs/40537066711)
+for commit `5f18766` passed the candidate job: build, Twine metadata checks,
+75 checkout tests, and fresh core/optional wheel and source installation tests.
+The local macOS CPython 3.12.2 rehearsal also passed both artifact checks.
+
+TestPyPI rejected the OIDC exchange with `invalid-publisher`: no corresponding
+publisher was found for the expected repository, workflow, and environment.
+No upload occurred and post-upload verification was skipped. Configure the
+account-side pending publisher above, then rerun failed jobs for this same run
+to publish the already-tested candidate and perform post-upload verification.
+Do not describe the end-to-end rehearsal as complete until those checks pass.
 
 The current candidate is `0.1.0a1`, approved for the initial alpha. Before a
 production release, recheck name availability and finish scientific/release
