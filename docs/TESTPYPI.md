@@ -76,6 +76,6 @@ correcting the account-side registration, attempt 3 succeeded. Do not rerun
 the publishing job for this version; uploaded files are immutable.
 
 
-The current candidate is `0.1.0a1`, approved for the initial alpha. Before a
-production release, recheck name availability and finish scientific/release
-review. Production publishing is a separate action.
+This section records the initial `0.1.0a1` rehearsal. The subsequent `0.1.0a2`
+rehearsal and production verification both passed; see [release records](RELEASES.md).
+Do not rerun uploads for either existing version: uploaded files are immutable.
