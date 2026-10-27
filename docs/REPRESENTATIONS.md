@@ -56,3 +56,8 @@ The original article verifies the citation and method description; its full
 numerical table was checked against the implementations above, rather than a
 copy of the paywalled article. Tests pin a digest of the CRAN factor table,
 selected vectors, and an independently computed direct DFT.
+
+## AAindex1
+
+Load additional scalar residue properties from an official local AAindex1
+file. See [AAindex1 usage and provenance](AAINDEX.md).

@@ -190,3 +190,6 @@ validation/abp_gn_fft1024_seed7/test_predictions.csv
 
 # Local compatibility logs are summarized in docs; CI uploads its own artifacts
 validation/compatibility-local/
+
+# User-managed AAindex snapshots and exported model provenance
+.aaindex/

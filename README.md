@@ -46,6 +46,21 @@ features = SequenceSet(embedding=kidera_factors(), compute_cross_spectra=False)
 features.from_sequence_list(["ACDE", "ACDF"], spectrum_length=8)
 ```
 
+AAindex1 files can also supply selected property channels (development version):
+
+```python
+from protspect.aaindex import AAIndex
+
+database = AAIndex.from_file(".aaindex/aaindex1")
+features = SequenceSet(
+    embedding=database.embedding(["KYTJ820101", "FAUJ880103"]),
+    compute_cross_spectra=False,
+)
+```
+
+See [AAindex1 loading, explicit downloads, and provenance](docs/AAINDEX.md).
+No database is bundled or downloaded during feature extraction.
+
 ## Generate sequence features
 
 ```python
