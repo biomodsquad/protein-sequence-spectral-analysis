@@ -1,0 +1,12 @@
+{
+  "same_complete_report": true,
+  "same_settings_and_features": true,
+  "same_class_predictions": true,
+  "same_official_identifiers": true,
+  "max_absolute_decision_difference": 0.0,
+  "scope": "same pinned environment and final workflow source; official complete website snapshot",
+  "runs": [
+    "cpp_official_run",
+    "cpp_official_replay"
+  ]
+}

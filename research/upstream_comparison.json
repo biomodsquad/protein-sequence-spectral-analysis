@@ -1,0 +1,40 @@
+{
+  "source_page": "https://balalab-skku.org/mlcpp2/download/",
+  "checked_date": "2026-10-27",
+  "comparisons": {
+    "CPP_training.csv": {
+      "official_url": "https://balalab-skku.org/mlcpp2/download/Layer1_training.txt/txt/",
+      "official_sha256": "4540306db9193c3061b55f0d4438753ec45440899bd4722b24bec281c51b79f1",
+      "repository_sha256": "ffb1d5321299378a258cf4f1a0f22288b21a94beccbb9874974083b2bb0b6d9c",
+      "official_rows": 1146,
+      "official_classes": {
+        "Positive": 573,
+        "Negative": 573
+      },
+      "repository_rows": 1146,
+      "matching_labeled_records": 1146,
+      "repository_only": 0,
+      "official_only": 0,
+      "official_only_classes": {},
+      "same_labeled_multiset": true
+    },
+    "CPP_independent.csv": {
+      "official_url": "https://balalab-skku.org/mlcpp2/download/Layer1_Independent.txt/txt/",
+      "official_sha256": "98dba8d5fdcb46c6bceb3c2731ddb0a119971b9b7019bb57d222251764b13b99",
+      "repository_sha256": "e79913c214e36db8719b5fad915746aef2a4bd18cc9cf5b6739bde3f849bab71",
+      "official_rows": 2341,
+      "official_classes": {
+        "Positive": 157,
+        "Negative": 2184
+      },
+      "repository_rows": 1627,
+      "matching_labeled_records": 1627,
+      "repository_only": 0,
+      "official_only": 714,
+      "official_only_classes": {
+        "Negative": 714
+      },
+      "same_labeled_multiset": false
+    }
+  }
+}

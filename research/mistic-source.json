@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/biomodsquad/interpretable-explainable-svms",
+  "commit": "8f115591921ed9b14fa03716246898694753780e",
+  "version": "0.2.0b1",
+  "files": {
+    "__init__.py": "e0fcee00704d8a0c0f291fd5f597303b6b25e9342b00be32bf5e67dc5a7c4220",
+    "cvSet.py": "25a949cbdec1ecd4f8f2d584fb86f2a500d7aeb3c6a91d05fec8cca368269f0f",
+    "explanations.py": "b6f094b99f40b3be1e45bd616280f831d178144811bae6566807619177258386",
+    "mixed_kernel.py": "971f2fe24a5509a9be42093f3a88755c105b5bfeb40551552b92cbd3a1c23249",
+    "parameter_space.py": "763b5fe7852cd7af6b167580fd0b83b8e86f298959ccf4bded61f656edd86cfb",
+    "selection.py": "84c6a5f3313a0bcb2b1c3b1a4c49feba9b755c1065d19623ed3c4972f395edcf",
+    "svmSet.py": "0c2b7f64b6ec084a197f4f0b72dc87ad07d32b167bd561115453ad754f904fb7",
+    "utility.py": "c78ee55adb401840d9d868cb2d69ac2bb8b881b3532a7432a70a68c94b26b7f4"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "purpose": "integration check only; no classifier or normalization-policy selection",
+  "preprocessing_fit": "training sequences only; test labels not accessed",
+  "train_shape": [
+    3562,
+    220
+  ],
+  "test_shape": [
+    1973,
+    220
+  ],
+  "test_transform_preserves_fitted_metadata": true,
+  "single_sequence_and_batch_outputs_agree": true,
+  "finite_features": true,
+  "seconds": 3.8826254999730736,
+  "source_sha256": "fb1750319ba7b6e2c7afcff691443d7960c176d0dcfdbb4d69c60cfd3eace721",
+  "data_sha256": {
+    "train": "b9643fdb8273209ac5150f3e0d08d42268ad35bf7af42241cab8cb9d370407c7",
+    "test": "96b3d25f177726e925c464464a4cdd7e271f99a3044bfc14259fb92a40f3730b"
+  }
+}
