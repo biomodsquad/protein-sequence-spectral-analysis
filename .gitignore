@@ -193,3 +193,7 @@ validation/compatibility-local/
 
 # User-managed AAindex snapshots and exported model provenance
 .aaindex/
+
+# Local atlas distance cache and bundled interactive viewer
+validation/embedding_atlas/pairwise_local.npz
+validation/embedding_atlas/interactive_atlas.html

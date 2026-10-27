@@ -1,0 +1,185 @@
+{
+  "inputs": [
+    {
+      "section": 1,
+      "path": "/private/tmp/protspect-aaindex1",
+      "sha256": "560f102dbee8ca9837186c4b2b93e253ea6efc58c88617234cef4e54bd61f676",
+      "records": 566
+    },
+    {
+      "section": 2,
+      "path": "/private/tmp/protspect-aaindex2",
+      "sha256": "d3eb30c075452aa737b111a3d127358d0b669d0e847fca967b253a05c7796aa9",
+      "records": 94
+    },
+    {
+      "section": 3,
+      "path": "/private/tmp/protspect-aaindex3",
+      "sha256": "8c9b9b0e7b7937b4674585b25f3f9370499f219b2583b1204fc9a0a5f06b1671",
+      "records": 47
+    }
+  ],
+  "analysis_sha256": "5054948392b9b7cffd05f83126f9d93a01ce8d264d179aa44e6cc6429affda41",
+  "builtin_sha256": "69981c4b443bd5cfb26b74f9baac3018d2e088a3c1c435758b78c3946c407e8d",
+  "vector_aliases": 6051,
+  "unique_shapes": 3826,
+  "vector_families": {
+    "AAindex1": 553,
+    "BLOSUM100": 20,
+    "Kidera": 10,
+    "AAindex2": 3750,
+    "AAindex3": 1718
+  },
+  "vector_clusters": [
+    {
+      "minimum_similarity": 0.8,
+      "clusters": 967,
+      "largest_cluster": 77,
+      "scope": "vector"
+    },
+    {
+      "minimum_similarity": 0.9,
+      "clusters": 1589,
+      "largest_cluster": 46,
+      "scope": "vector"
+    },
+    {
+      "minimum_similarity": 0.95,
+      "clusters": 2137,
+      "largest_cluster": 41,
+      "scope": "vector"
+    },
+    {
+      "minimum_similarity": 0.98,
+      "clusters": 2669,
+      "largest_cluster": 41,
+      "scope": "vector"
+    },
+    {
+      "minimum_similarity": 0.99,
+      "clusters": 2974,
+      "largest_cluster": 33,
+      "scope": "vector"
+    }
+  ],
+  "aaindex1_clusters": [
+    {
+      "minimum_similarity": 0.8,
+      "clusters": 242,
+      "largest_cluster": 23,
+      "scope": "aaindex1"
+    },
+    {
+      "minimum_similarity": 0.9,
+      "clusters": 353,
+      "largest_cluster": 11,
+      "scope": "aaindex1"
+    },
+    {
+      "minimum_similarity": 0.95,
+      "clusters": 436,
+      "largest_cluster": 9,
+      "scope": "aaindex1"
+    },
+    {
+      "minimum_similarity": 0.98,
+      "clusters": 499,
+      "largest_cluster": 4,
+      "scope": "aaindex1"
+    },
+    {
+      "minimum_similarity": 0.99,
+      "clusters": 524,
+      "largest_cluster": 3,
+      "scope": "aaindex1"
+    }
+  ],
+  "whole_representations": 166,
+  "whole_clusters": [
+    {
+      "minimum_similarity": 0.8,
+      "clusters": 54,
+      "largest_cluster": 30
+    },
+    {
+      "minimum_similarity": 0.9,
+      "clusters": 82,
+      "largest_cluster": 30
+    },
+    {
+      "minimum_similarity": 0.95,
+      "clusters": 106,
+      "largest_cluster": 28
+    },
+    {
+      "minimum_similarity": 0.98,
+      "clusters": 120,
+      "largest_cluster": 26
+    },
+    {
+      "minimum_similarity": 0.99,
+      "clusters": 134,
+      "largest_cluster": 12
+    }
+  ],
+  "vector_pca_variance": [
+    0.11402744275032232,
+    0.06337850053681242
+  ],
+  "signed_pca_variance": [
+    0.3405058927858441,
+    0.11353594801870373
+  ],
+  "whole_pca_variance": [
+    0.3308407618353631,
+    0.1085996126976451
+  ],
+  "score_pca_variance": [
+    0.3963324617719976,
+    0.13350386531644223
+  ],
+  "layout_metrics": {
+    "projector_pca": {
+      "neighbor_recall_at_10": 0.13559853633037114,
+      "audit_trustworthiness_at_10": 0.7543458608430675,
+      "trustworthiness_audit_n": 1000
+    },
+    "umap_n15_seed0": {
+      "neighbor_recall_at_10": 0.3992681651855724,
+      "audit_trustworthiness_at_10": 0.951389436262062,
+      "trustworthiness_audit_n": 1000
+    },
+    "umap_n15_seed1": {
+      "neighbor_recall_at_10": 0.40316257187663357,
+      "audit_trustworthiness_at_10": 0.9524989334687659,
+      "trustworthiness_audit_n": 1000
+    },
+    "umap_n50_seed0": {
+      "neighbor_recall_at_10": 0.33677469942498695,
+      "audit_trustworthiness_at_10": 0.9558175723717623,
+      "trustworthiness_audit_n": 1000
+    }
+  },
+  "whole_layout_metrics": {
+    "neighbor_recall_at_10": 0.5355421686746986,
+    "audit_trustworthiness_at_10": 0.8930512748669095,
+    "trustworthiness_audit_n": 166
+  },
+  "environment": {
+    "python": "3.12.2",
+    "numpy": "1.26.4",
+    "scipy": "1.13.1",
+    "pandas": "2.3.3",
+    "matplotlib": "3.9.2",
+    "scikit-learn": "1.7.2",
+    "umap-learn": "0.5.9.post2"
+  },
+  "parameters": {
+    "residue_order": "ARNDCQEGHILKMFPSTWYV",
+    "dedup_decimals": 10,
+    "vector_threshold": 0.95,
+    "umap_epochs": 300,
+    "umap_min_dist": 0.15,
+    "threads": 1
+  }
+}
