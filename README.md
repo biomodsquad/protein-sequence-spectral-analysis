@@ -162,8 +162,24 @@ CI checks Python 3.10–3.15 on Linux, macOS, and Windows, installing both
 wheel and source archives into fresh environments outside the checkout. Exact
 minimum dependencies are checked on Python 3.10. See
 [the compatibility policy](docs/COMPATIBILITY.md) for scope and evidence. See [RELEASE_REVIEW.md](RELEASE_REVIEW.md) for findings,
-validation evidence, and the remaining release decisions. The version
-`0.1.0a1` is provisional. Name availability is not a reservation; confirm it and
+validation evidence, and the remaining release decisions. The initial alpha version is
+`0.1.0a1`. Name availability is not a reservation; confirm it and
 complete TestPyPI installation checks before uploading to PyPI.
+
+## Citation and project contact
+
+Cite the software version and commit used:
+
+> Biomolecular Systems Modeling and Design Group. *Protspect: protein sequence
+> spectral analysis*. Version 0.1.0a1.
+> https://github.com/biomodsquad/protein-sequence-spectral-analysis
+
+Machine-readable metadata is in [CITATION.cff](CITATION.cff). Cite dataset
+sources and external methods separately; the CPP example lists these in
+[its provenance documentation](research/DATA_PROVENANCE.md).
+
+The group maintains this package through [GitHub Issues](https://github.com/biomodsquad/protein-sequence-spectral-analysis/issues).
+See the [changelog](CHANGELOG.md), [support policy](SUPPORT.md), and
+[contribution guide](CONTRIBUTING.md).
 
 Licensed under the [BSD 3-Clause License](LICENSE).

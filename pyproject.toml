@@ -11,6 +11,8 @@ requires-python = ">=3.10"
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 authors = [{name = "Biomolecular Systems Modeling and Design Group"}]
+maintainers = [{name = "Biomolecular Systems Modeling and Design Group"}]
+keywords = ["protein", "peptide", "Fourier", "spectral analysis", "bioinformatics"]
 dependencies = ["numpy>=1.23", "scipy>=1.9", "pandas>=1.5"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -22,6 +24,9 @@ classifiers = [
 [project.urls]
 Repository = "https://github.com/biomodsquad/protein-sequence-spectral-analysis"
 Issues = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/issues"
+Documentation = "https://github.com/biomodsquad/protein-sequence-spectral-analysis#readme"
+Changelog = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/blob/main/CHANGELOG.md"
+Support = "https://github.com/biomodsquad/protein-sequence-spectral-analysis/issues"
 
 [project.optional-dependencies]
 ml = ["scikit-learn>=1.4"]

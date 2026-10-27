@@ -107,12 +107,14 @@ test transformation. This is an integration check, not normalization selection.
    macOS, and Windows, with exact minimum stacks on Python 3.10. Fresh local
    installs found and corrected a scikit-learn lower-bound incompatibility.
    See [compatibility evidence](docs/COMPATIBILITY.md).
-5. **Finalize release metadata and ownership.** Confirm Protspect availability
-   immediately before uploading, approve the provisional `0.1.0a1` version,
-   add a maintainer contact and preferred scientific citation, and document a
-   changelog and support/contribution policy. Consider a dedicated paired-chain
-   result type in a later API revision instead of a SequenceFFT whose sequence
-   field holds a pair.
+5. **Finalize release metadata and ownership — implemented.** The maintainer
+   approved group authorship/maintenance, GitHub Issues as the public contact,
+   a software citation, and `0.1.0a1` for the first alpha. These are recorded in
+   package metadata, `CITATION.cff`, and README. Added changelog, support policy,
+   and contribution guidance, all included in the source distribution. PyPI's
+   JSON endpoint for `protspect` returned HTTP 404 on 2026-10-27; this does not
+   reserve the name or guarantee registration. Recheck immediately before
+   upload. A dedicated paired-chain result type remains a future API change.
 6. **Perform a TestPyPI rehearsal.** Configure trusted publishing with explicit
    release environments; upload the candidate to TestPyPI, install its wheel
    and sdist in clean environments with dependencies from PyPI, run the
