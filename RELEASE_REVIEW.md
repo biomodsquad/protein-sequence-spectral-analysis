@@ -132,3 +132,10 @@ test transformation. This is an integration check, not normalization selection.
 - [Writing pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/).
 - [Packaging Python projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
 - [PyPI trusted publishing](https://docs.pypi.org/trusted-publishers/).
+
+
+## Published alpha
+
+`0.1.0a1` was published to production PyPI on 2026-10-27 after all release
+checks passed. See [the production release record](docs/RELEASES.md). Earlier
+review sections describe the work and decisions leading to that release.
