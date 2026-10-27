@@ -1,6 +1,6 @@
 include CHANGELOG.md CONTRIBUTING.md SUPPORT.md CITATION.cff
 include RELEASE_REVIEW.md
-recursive-include examples *.py
+recursive-include examples *.py *.ipynb
 include validation/README.md
 recursive-include docs *.md
 recursive-include research *.md *.py *.ipynb *.json *.in *.txt

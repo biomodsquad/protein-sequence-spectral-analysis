@@ -32,6 +32,13 @@ python -m pip install -e '.[dev]'
 The distribution is named `Protspect`. The unrelated `prospect` package is a
 different project.
 
+## Alternative transforms (development checkout)
+
+Fourier, circular Z, finite discrete Mellin, and discrete wavelet transforms now
+share `transform_sequence`, with a fixed-width `SequenceTransformer` for sklearn.
+See [definitions and examples](docs/TRANSFORMS.md). Wavelets require the optional
+`wavelets` extra. These additions are not yet in the published alpha.
+
 ## Residue representations
 
 The development branch includes the ten Kidera factors (KF1–KF10), in addition

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add explicit Fourier/Z/Mellin/discrete-wavelet coefficient transforms, optional
+  PyWavelets dependency, and fixed-schema SequenceTransformer integration.
+
 - Add AAindex2/3 matrix catalogues, explicit section download helpers, native
   axis/storage provenance, and canonical row/column profile adapters. Preserve
   asymmetric/rectangular matrices and reject missing canonical scores.
