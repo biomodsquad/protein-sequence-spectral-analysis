@@ -1,6 +1,6 @@
 # Protspect
 
-**Protein sequence spectral analysis**: Fourier features for proteins and
+**Protein sequence spectral analysis**: transform features for proteins and
 peptides using numeric residue-property channels. This is the original sequence
 featurization method, separate from the subsequent protein language-model work.
 
@@ -79,101 +79,57 @@ embedding = matrices.embedding("HENS920102", axis="rows")  # BLOSUM62
 
 See [matrix conversion and contact-potential interpretation](docs/AAINDEX_MATRICES.md).
 
-## Generate sequence features
+## One transform API
+
+The development API supports `method='fourier'|'z'|'mellin'|'wavelet'` throughout.
+`SequenceSet` and `ComplexSet` remain primary interfaces for single and paired
+collections. All entry points share the same backend and feature exporter.
+These additions are not yet in PyPI 0.1.0a1; install this checkout, adding
+`.[wavelets]` for wavelets and `.[ml]` for sklearn.
 
 ```python
-from protspect import SequenceSet
+from protspect import SequenceSet, ComplexSet, transform_sequence
 
-features = SequenceSet(compute_cross_spectra=False)
-features.from_sequence_list(
-    ["ACDE", "ACDF"],
-    spectrum_length=8,
-    attributes={"name": ["peptide-1", "peptide-2"]},
-)
-table = features.export_datatable(attributes=["name"])
-print(table.shape)  # (2, 81): metadata plus 20 channels at four frequencies
+features = SequenceSet(method='fourier', compute_cross_spectra=False)
+features.from_sequence_list(['ACDE', 'ACDF'], length=8,
+    attributes={'name': ['peptide-1', 'peptide-2']})
+table = features.export_features('amplitude', attributes=['name'])
+print(table.shape)  # (2, 161): metadata + 20 channels × 8 unique Fourier bins
+
+pairs = ComplexSet(method='z', transform_options={'radius': 1.05})
+pairs.from_sequence_list(['ACDE'], ['ACDF'], length=8)
+paired_table = pairs.export_features(('amplitude', 'phase'))
+chain_a_table = pairs.export_features('amplitude', chain_ID='A')
+
+result = transform_sequence('ACDE', method='fourier', length=8)
+values, names = result.features(selector=lambda c: c['frequency'] >= 0)
 ```
 
-The default embedding `protspect.embeddings.b100` maps 20 canonical amino acids
-to their 20 BLOSUM100 substitution-score channels. Inputs are case-sensitive;
-unknown residues, gaps, stop symbols, and lowercase letters are rejected when
-not covered by the embedding. Custom numeric channels can encode other residue
-properties or alphabets:
+The default BLOSUM100 embedding supplies 20 residue-property channels. Kidera,
+AAindex, and custom channel mappings work with every transform. Inputs are
+case-sensitive; unknown residues are rejected when not covered by the embedding.
+All chains in a collection share a fixed grid; no sequence truncation occurs.
+Per-sequence centering and none/length/sqrt_length/energy normalization operate
+on real residues before padding. Metadata cannot overwrite features.
 
-```python
-from protspect import SequenceFFT
+`component` selects amplitude, phase, real, imaginary, or an ordered tuple;
+`kinds` selects coefficients and/or within-channel `cross_coefficients`.
+`selector` receives named coordinate arrays: frequency for Fourier/Z,
+log-frequency for Mellin, band/index for wavelets. Primary exports include
+all coefficients by default, with no periodic duplicate. Paired products are
+aligned coefficient descriptors, not a physical model of residue contacts.
 
-sequence = SequenceFFT("ACAC")
-sequence.embed_sequence({"property": {"A": 1.0, "C": -1.0}})
-sequence.compute_spectra(length=4)
-properties = sequence.compute_spectral_properties(compute_phase=True)
-assert properties["Amp_property_0.5"] == 4.0
-```
+For fitted pipelines use `protspect.sklearn.SequenceTransformer`, with the same
+method/options/components and coordinate selectors. Set `paired=True` for
+(A, B) samples. Grid and channel moments fit on training chains only; selection
+and output columns are frozen. See [the unified API](docs/UNIFIED_API.md),
+[transform definitions](docs/TRANSFORMS.md), and
+[normalization formulas](docs/PREPROCESSING.md).
 
-`embed_sequence` stores one numeric vector per channel; `compute_spectra`
-right-pads each vector with zeros and computes its FFT. `compute_cross_spectra`
-optionally creates all upper-triangle within-sequence channel cross-products,
-including auto-spectra. To export those, use
-`features.export_datatable(spectra=("cross_spectra",))` after enabling them.
-Metadata names must not collide with API attributes or generated feature names.
-
-## Paired chains
-
-```python
-from protspect import ComplexSet
-
-pairs = ComplexSet()
-pairs.from_sequence_list(["ACDE"], ["ACDF"], spectrum_length=8)
-cross_chain_features = pairs.export_datatable(chain_ID="AB")
-chain_a_features = pairs.export_datatable(chain_ID="A")
-```
-
-A/B collections must contain the same number of sequences. Each pair produces
-all ordered channel products `FFT(A_i) * conjugate(FFT(B_j))`. Swapping A and B
-conjugates the corresponding product, so phase encodes chain order. These are
-spectral descriptors, not a physical model of binding or residue contacts.
-`compute_cross_cross_spectra=True` is explicitly unsupported.
-
-## Numerical conventions
-
-- All sequences in a collection share one FFT length. If omitted, the next
-  power of two covering the longest sequence is used. Supply the same explicit
-  length for training, validation, and test collections to preserve columns.
-- FFTs are unnormalized by default and their bins are centered with `fftshift`. For FFT length `L`,
-  `spectrum_length` is `L`, while each stored spectrum and its `frequency` array
-  contain `L + 1` entries. The first bin is repeated at the end to close the
-  periodic spectrum, with its frequency increased by one cycle per residue.
-  For even `L`, this gives frequencies from -0.5 through +0.5. For odd `L`,
-  the endpoint exceeds +0.5; it remains a periodic duplicate, not a new bin.
-- The default selector exports DC and positive dyadic frequencies on the grid:
-  1/2, 1/4, 1/8, etc. For non-power-of-two lengths some or all dyadic bins
-  may be absent. A custom selector receives the frequency array and must return
-  a boolean mask of the same shape. `frequency_select_positive` in
-  `protspect.utility` selects all nonnegative entries, including the closure bin.
-- `Amp_...` features are absolute magnitudes; `Phase_...` features are angles
-  in radians. Cross-spectrum magnitudes scale quadratically with signal scale.
-  Optional length, square-root-length, or unit-energy scaling and per-sequence
-  mean centering are available before padding. No preprocessing is applied by
-  default, and phase unwrapping is not implemented.
-  Phase at zero magnitude is not meaningful.
-- Padding, sequence length, and channel scale affect the representation.
-  Amplitudes lose absolute circular-shift position information; phases depend
-  on alignment and sequence origin. Standardize features using training data
-  only when fitting downstream models.
-
-## Normalization and fitted grids
-
-`SequenceFFT.compute_spectra`, `SequenceSet`, and `ComplexSet` accept explicit
-`normalization='none'|'length'|'sqrt_length'|'energy'` and `center=False|True`
-options. Existing raw defaults are preserved.
-
-For machine learning, install `.[ml]` and use
-`from protspect.sklearn import SpectralTransformer` inside a scikit-learn
-Pipeline. It freezes the grid, selector, embedding, and feature column order at
-fit time, and can learn channel scales from training residues only. Longer
-prediction sequences raise an error rather than changing the grid. See
-[the preprocessing guide](docs/PREPROCESSING.md) for formulas, tradeoffs,
-leakage prevention, and model/feature metadata persistence.
+`SequenceFFT`, `SpectralTransformer`, and the sets' `export_datatable` methods
+remain compatibility adapters. Existing Fourier values, selectors, closure bins,
+and feature names are preserved. Use them with existing fitted models; recompute
+and refit before switching to the primary full-bin feature schema.
 
 ## Migration from FFTpro
 

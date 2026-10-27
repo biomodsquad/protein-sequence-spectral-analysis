@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "Protspect"
 version = "0.1.0a1"
-description = "Fourier spectral features for protein and peptide sequences"
+description = "Spectral transform features for protein and peptide sequences"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "BSD-3-Clause"

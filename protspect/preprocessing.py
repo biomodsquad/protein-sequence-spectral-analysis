@@ -1,4 +1,4 @@
-"""Explicit per-sequence preprocessing before zero-padding and the FFT."""
+"""Explicit per-sequence preprocessing before padding and transformation."""
 
 import numpy as np
 

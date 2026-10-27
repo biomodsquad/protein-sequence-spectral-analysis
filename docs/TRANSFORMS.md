@@ -10,7 +10,7 @@ from protspect.embeddings import kidera_factors
 
 result = transform_sequence(
     'GIGKFLHSAKKFGKAFVGEIMNS', kidera_factors(),
-    transform='wavelet', length=64, wavelet='db2', level=3,
+    method='wavelet', length=64, wavelet='db2', level=3,
     center=True, normalization='energy',
 )
 values, names = result.features('real')
@@ -18,9 +18,11 @@ print(result.coordinates, result.metadata)
 ```
 
 The same embedding mappings work with all transforms, including AAindex1
-channels and AAindex2/3 row/column adapters. Legacy `SequenceFFT`, `SequenceSet`,
-`ComplexSet`, and `SpectralTransformer` retain their existing Fourier behavior.
-The new interface returns no repeated closure bin and applies no frequency mask.
+channels and AAindex2/3 row/column adapters. `Sequence`, `SequenceSet`, `ComplexSet`,
+and `SequenceTransformer` use one shared engine for all four transforms. Legacy
+`SequenceFFT` and `SpectralTransformer` preserve existing Fourier behavior through
+compatibility adapters. Primary exports return no repeated closure bin and apply
+no implicit selector. See [the unified API and migration guide](UNIFIED_API.md).
 
 | Backend | Definition / coordinates | Main controls |
 | --- | --- | --- |
@@ -60,9 +62,11 @@ can exceed `length`, depending on extension and filter length. Consult
 Use `features('real')` for signed wavelet coefficients; amplitude discards signs.
 Phase is defined mathematically but offers little information for real wavelets.
 Coefficient indices are accompanied by band and within-band coordinates. They
-must not be interpreted as uniformly spaced Fourier frequencies. Current
-alternative transforms export channel coefficients only; cross-channel products,
-paired-chain features, and legacy spectral summary selectors remain Fourier-only.
+must not be interpreted as uniformly spaced Fourier frequencies. All backends
+support aligned cross-channel and paired-chain coefficient products through
+`features(kinds=('cross_coefficients',))`, `transform_pair`, and `ComplexSet`.
+Coordinate-dictionary selectors keep band/position and log-frequency meanings
+explicit; historical frequency selectors remain in Fourier compatibility exports.
 
 ## Exploration notebook
 
