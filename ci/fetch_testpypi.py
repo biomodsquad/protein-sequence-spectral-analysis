@@ -1,4 +1,4 @@
-"""Download and verify the exact TestPyPI wheel and sdist for a rehearsal."""
+"""Download and verify the exact wheel and sdist from TestPyPI or PyPI."""
 
 import argparse
 import hashlib
@@ -16,8 +16,11 @@ def main():
     parser.add_argument('--version', required=True)
     parser.add_argument('--candidate-dir', type=Path, required=True)
     parser.add_argument('--output-dir', type=Path, required=True)
+    parser.add_argument('--index', choices=['testpypi', 'pypi'], default='testpypi')
     args = parser.parse_args()
-    url = f'https://test.pypi.org/pypi/protspect/{args.version}/json'
+    domain = 'test.pypi.org' if args.index == 'testpypi' else 'pypi.org'
+    file_host = 'test-files.pythonhosted.org' if args.index == 'testpypi' else 'files.pythonhosted.org'
+    url = f'https://{domain}/pypi/protspect/{args.version}/json'
     for attempt in range(10):
         try:
             with urlopen(url, timeout=30) as response:
@@ -37,8 +40,8 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=False)
     for name, item in files.items():
         parsed = urlparse(item['url'])
-        if parsed.scheme != 'https' or parsed.hostname != 'test-files.pythonhosted.org':
-            raise ValueError('Unexpected TestPyPI artifact host')
+        if parsed.scheme != 'https' or parsed.hostname != file_host:
+            raise ValueError('Unexpected package-index artifact host')
         expected = hashlib.sha256(candidates[name].read_bytes()).hexdigest()
         if item['digests']['sha256'] != expected:
             raise ValueError(f'Uploaded digest differs from candidate: {name}')
@@ -47,8 +50,8 @@ def main():
         if hashlib.sha256(content).hexdigest() != expected:
             raise ValueError(f'Download digest mismatch: {name}')
         (args.output_dir/name).write_bytes(content)
-        print(f'Verified TestPyPI download: {name} sha256={expected}')
-    (args.output_dir/'testpypi-metadata.json').write_text(
+        print(f'Verified {args.index} download: {name} sha256={expected}')
+    (args.output_dir/f'{args.index}-metadata.json').write_text(
         json.dumps(metadata, indent=2)+'\n', encoding='utf-8')
 
 

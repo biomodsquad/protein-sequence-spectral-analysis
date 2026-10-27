@@ -1,0 +1,117 @@
+name: Publish rehearsed alpha to PyPI
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: production-pypi
+  cancel-in-progress: false
+jobs:
+  candidate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require successful rehearsal and identical package code
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/actions/runs/40537066711 --jq 'select(.conclusion == "success" and .head_sha == "5f18766b78210451cbf682b7670ab9e12767d240") | .id' > rehearsal-id.txt
+          test -s rehearsal-id.txt
+          git diff --exit-code 5f18766 HEAD -- protspect FFTpro pyproject.toml
+      - uses: actions/download-artifact@v4
+        with:
+          name: testpypi-candidate
+          run-id: 40537066711
+          github-token: ${{ github.token }}
+          path: candidate/
+      - name: Verify exact rehearsed artifacts against TestPyPI
+        run: |
+          python ci/fetch_testpypi.py --version 0.1.0a1 --candidate-dir candidate --output-dir rehearsed
+          python -c "from pathlib import Path; import shutil; Path('dist').mkdir(); [shutil.copy2(p, 'dist') for p in Path('rehearsed').iterdir() if p.name.endswith(('.whl', '.tar.gz'))]"
+      - name: Validate artifacts before production upload
+        env:
+          PIP_INDEX_URL: https://pypi.org/simple/
+          PIP_EXTRA_INDEX_URL: ''
+        run: |
+          python -m pip install twine
+          python -m twine check dist/*
+          python ci/check_installed.py --output-dir candidate-checks
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-candidate
+          path: dist/
+  publish:
+    needs: candidate
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/Protspect/0.1.0a1/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-candidate
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://upload.pypi.org/legacy/
+  verify:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-candidate
+          path: candidate/
+      - run: python ci/fetch_testpypi.py --index pypi --version 0.1.0a1 --candidate-dir candidate --output-dir published
+      - name: Test production downloads in fresh environments
+        env:
+          PIP_INDEX_URL: https://pypi.org/simple/
+          PIP_EXTRA_INDEX_URL: ''
+        run: python ci/check_installed.py --dist-dir published --output-dir production-checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-evidence
+          path: |
+            published/
+            production-checks/
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-candidate
+          path: dist/
+      - name: Create matching GitHub prerelease after successful PyPI verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > release-notes.md <<'EOF'
+          First Protspect alpha: Fourier spectral features for protein and peptide sequences.
+
+          Install with `python -m pip install Protspect==0.1.0a1` or `python -m pip install 'Protspect[ml]==0.1.0a1'`.
+
+          Includes corrected FFT frequency ordering and BLOSUM100 P/A score, normalization, fitted preprocessing, legacy FFTpro imports, and a reproducible CPP example. Recompute affected historical features and retrain downstream models. Alpha APIs may change.
+
+          Published artifacts are exactly those validated in TestPyPI rehearsal run 40537066711 (candidate commit 5f18766). Production downloads were hash-verified and clean-install tested before creating this prerelease. See CHANGELOG.md and docs/TESTPYPI.md for details.
+          EOF
+          gh release create v0.1.0a1 dist/* --target "${{ github.sha }}" --title 'Protspect 0.1.0a1' --prerelease --notes-file release-notes.md
