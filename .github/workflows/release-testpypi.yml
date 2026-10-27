@@ -1,0 +1,79 @@
+name: TestPyPI rehearsal
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/prospect-release-readiness]
+    paths: ['.github/workflows/release-testpypi.yml']
+permissions:
+  contents: read
+concurrency:
+  group: testpypi-rehearsal
+  cancel-in-progress: false
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install '.[dev,validation]'
+      - run: python -m ruff check .
+      - run: python -m pytest -q
+      - run: python -m build
+      - run: python -m twine check dist/*
+      - run: python ci/check_installed.py --output-dir candidate-checks
+      - uses: actions/upload-artifact@v4
+        with:
+          name: testpypi-candidate
+          path: dist/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: testpypi-candidate-checks
+          path: candidate-checks/
+  publish:
+    needs: candidate
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/Protspect/0.1.0a1/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: testpypi-candidate
+          path: dist/
+      - name: Publish only to TestPyPI using its trusted publisher
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+  verify:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: testpypi-candidate
+          path: candidate/
+      - name: Download exact uploaded artifacts and compare SHA256 hashes
+        run: python ci/fetch_testpypi.py --version 0.1.0a1 --candidate-dir candidate --output-dir testpypi-dist
+      - name: Test downloaded wheel and sdist with dependencies from production PyPI
+        env:
+          PIP_INDEX_URL: https://pypi.org/simple/
+          PIP_EXTRA_INDEX_URL: ''
+        run: python ci/check_installed.py --dist-dir testpypi-dist --output-dir testpypi-checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: testpypi-rehearsal-evidence
+          path: |
+            testpypi-dist/
+            testpypi-checks/
