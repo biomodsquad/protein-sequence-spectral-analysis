@@ -56,10 +56,8 @@ mixed rather than a universal predictive improvement; see the scientific report.
   scientific dependencies. All 24 tests and the basic example also pass outside
   the checkout against that installed wheel; this was not a fresh dependency
   resolution or a TestPyPI install.
-- CI is configured for Python 3.10–3.14, including an installed-wheel smoke test
-  outside the checkout. These remote CI jobs have not run as part of this local
-  review. Local tests do not establish support for every declared dependency
-  minimum or operating system.
+- The current 21-job installed-distribution CI matrix and fresh local minimum/
+  latest dependency checks are documented in [COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
 ## Normalization and grid implementation validation
 
@@ -104,8 +102,8 @@ test transformation. This is an integration check, not normalization selection.
    and [results](research/RESULTS.md). Both source studies are cited. Raw downloads
    and prepared CSVs are local cache files excluded from distributions; research
    dependencies remain outside runtime requirements.
-4. **Confirm the supported environment range — verification in progress.**
-   A 21-job installed-distribution matrix covers Python 3.10–3.15 on Linux,
+4. **Confirm the supported environment range — implemented and verified.**
+   All 21 installed-distribution jobs passed, covering Python 3.10–3.15 on Linux,
    macOS, and Windows, with exact minimum stacks on Python 3.10. Fresh local
    installs found and corrected a scikit-learn lower-bound incompatibility.
    See [compatibility evidence](docs/COMPATIBILITY.md).

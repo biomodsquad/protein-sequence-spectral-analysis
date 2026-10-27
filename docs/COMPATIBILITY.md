@@ -1,8 +1,8 @@
 # Compatibility policy and validation
 
 Protspect requires Python >=3.10. The CI target is CPython 3.10–3.15 on
-Linux, macOS, and Windows. A support target is not a claim of completed
-verification; the pull request checks record the actual platform results.
+Linux, macOS, and Windows. All 21 installed-distribution jobs passed, along with the build/lint/test job.
+The run linked below records the actual platform results.
 
 Each of the 18 latest-compatible dependency jobs installs both the wheel and
 source distribution in separate fresh virtual environments outside the checkout.
@@ -34,13 +34,27 @@ for each interpreter; arbitrary mixtures of old and new dependency versions,
 PyPy, free-threaded builds, and additional architectures are not established by
 this matrix. The research notebook has its own pinned Python 3.12 environment.
 
+## Verified environments
+
+| OS | Latest compatible stack | Exact minimum stack |
+| --- | --- | --- |
+| Linux | CPython 3.10–3.15: passed | CPython 3.10: passed |
+| macOS | CPython 3.10–3.15: passed | CPython 3.10: passed |
+| Windows | CPython 3.10–3.15: passed | CPython 3.10: passed |
+
+Each installed-distribution job runs the wheel and source suites separately.
+The full optional suite passes 74 tests per artifact, with the one expected
+Git-history skip. The source-checkout build job passes all 75 tests.
+
 ## Local evidence
 
 Fresh wheel and source installs passed on macOS arm64 with CPython 3.14.10
-and 3.15.2 using current dependencies. The minimum Python 3.10.22 wheel check
-passed 74 tests with one expected checkout-only skip. The source minimum check
-is being completed after correcting an invalid setuptools 77.0.0 test pin.
-Remote platform verification is pending the first pull request run.
+and 3.15.2 using current dependencies. The minimum Python 3.10.22 wheel and source checks
+each passed 74 tests with one expected checkout-only skip.
+
+Remote platform verification **passed all 22 checks** in
+[GitHub Actions run 40532904693](https://github.com/biomodsquad/protein-sequence-spectral-analysis/actions/runs/40532904693)
+for commit `8e066b2`, reviewed in [PR #2](https://github.com/biomodsquad/protein-sequence-spectral-analysis/pull/2).
 
 Run the same checks after building with:
 
