@@ -47,7 +47,7 @@
   },
   "supplied_artwork": {
     "docs/_static/protspect-logo.png": {
-      "sha256": "f972f60abaa7d70fbbb9941bf141d879220da6b24180e5b8216d934aca86fb88",
+      "sha256": "43c6cdc6c2a00d2e880d6024c741ab58fb1ef63dcb279db27e92903af0acf8da",
       "preserved_unchanged": true
     },
     "docs/_static/figures/sequence-matrix-spectral-analysis.png": {
