@@ -1,0 +1,67 @@
+{
+  "purpose": "Unified transform API regression and end-to-end validation",
+  "python": "3.12.2",
+  "versions": {
+    "numpy": "1.26.4",
+    "scipy": "1.13.1",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "PyWavelets": "1.7.0"
+  },
+  "tests_passed": 188,
+  "cross_interface_backends": [
+    "fourier",
+    "z",
+    "mellin",
+    "wavelet"
+  ],
+  "interfaces": [
+    "Sequence",
+    "transform_sequence",
+    "SequenceSet",
+    "transform_pair",
+    "ComplexSet",
+    "SequenceTransformer"
+  ],
+  "compatibility": [
+    "SequenceFFT",
+    "SpectralTransformer",
+    "FFTpro imports",
+    "legacy export_datatable"
+  ],
+  "amp_replay": {
+    "identical_test_probabilities": true,
+    "identical_metrics_settings_epochs": true,
+    "test_rows": 1973,
+    "transforms": [
+      "fourier",
+      "z",
+      "mellin",
+      "wavelet"
+    ]
+  },
+  "old_installed_estimator_pickle_check": {
+    "classes": [
+      "SpectralTransformer",
+      "SequenceTransformer"
+    ],
+    "inference_and_clone_refit_checked": true,
+    "rtol": 1e-12,
+    "atol": 1e-12
+  },
+  "source_sha256": {
+    "protspect/_sequence.py": "3249d6aad80d3685ecc97d88c99fe530f4e2b8d93806142bd472fe3f414268a3",
+    "protspect/features.py": "451d09418f5be0906a22653d2abdf18b04f98a2dbfd1f6edb6210464edd86689",
+    "protspect/transforms.py": "3251d51d7e6d0237eb4b63837d74838f902dbff335ed74b7aabb1acefe93b845",
+    "protspect/sklearn.py": "4363b49b91e7d991c9f8d4c9ee55eae20e38bcf0eb01bae12cb9ef41305dd378",
+    "protspect/preprocessing.py": "261ddd6d1e2a3b77e5e64c4de83e56fe6fc5e4c4f7954b22edb489394879ee43",
+    "protspect/__init__.py": "0127911839443b560514ec9e219d5b128515147fbd93bc318c8d5b9dd88121dd"
+  },
+  "packaging": {
+    "wheel_built": true,
+    "sdist_built": true,
+    "twine_check_passed": true,
+    "installed_wheel_single_and_paired_parity_all_four_methods": true,
+    "installed_wheel_legacy_exports_match": true
+  }
+}

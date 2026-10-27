@@ -1,3 +1,7 @@
+> Development API: use `SequenceTransformer` and the generic `SequenceSet` /
+> `ComplexSet` exports for all four transforms. The Fourier examples below retain
+> compatibility names and closed-bin conventions. See [the unified API](UNIFIED_API.md).
+
 # Normalization and fitted feature grids
 
 Raw, uncentered spectra remain the default. These options specify different

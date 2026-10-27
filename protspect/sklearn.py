@@ -5,17 +5,17 @@ from collections import Counter
 from collections.abc import Mapping
 
 import numpy as np
-from scipy.fft import fftfreq, fftshift
 
 try:
     from sklearn.base import BaseEstimator, TransformerMixin
     from sklearn.utils.validation import check_is_fitted
 except ImportError as error:
-    raise ImportError("SpectralTransformer requires scikit-learn; install Protspect[ml]") from error
+    raise ImportError("Protspect sklearn integration requires scikit-learn; install Protspect[ml]") from error
 
 from . import __version__
 from .embeddings import b100
-from .features import SequenceFFT, _length, _sequences
+from ._sequence import _length, _sequences
+from .transforms import transform_sequence, transform_pair, _selection, _export_features
 from .preprocessing import validate_preprocessing
 from .utility import frequency_select_physical
 
@@ -75,59 +75,251 @@ def _channel_statistics(sequences, embedding, standardize):
     return means, scales, effective
 
 
-class SpectralTransformer(TransformerMixin, BaseEstimator):
-    """Fit a fixed Fourier feature schema for a one-dimensional sequence iterable.
+def _samples(X, paired):
+    """Materialize single sequences or exact two-chain samples without truncation."""
+    if not paired:
+        return _sequences(X)
+    if isinstance(X, str):
+        raise TypeError('provide an iterable of two-sequence pairs')
+    samples = []
+    for pair in X:
+        if isinstance(pair, str):
+            raise ValueError('each paired sample must contain exactly two sequences')
+        pair = list(pair)
+        if len(pair) != 2:
+            raise ValueError('each paired sample must contain exactly two sequences')
+        samples.append(tuple(_sequences(pair)))
+    if not samples:
+        raise ValueError('provide at least one two-sequence pair')
+    return samples
 
-    Parameters
-    ----------
-    embedding : dict of dict, optional
-        Numeric channels indexed by single-character residue codes. All channels
-        must cover the same alphabet. None uses BLOSUM100. For estimator cloning,
-        supply ordinary dictionaries for custom embeddings.
-    spectrum_length : int, optional
-        FFT length. None selects the smallest power of two covering the longest
-        training sequence. Transform rejects sequences longer than this fitted
-        grid. No cropping or grid expansion is performed.
-    normalization : {"none", "length", "sqrt_length", "energy"}, optional
-        Per-sequence scaling before padding; see SequenceFFT.compute_spectra.
-    center : bool, optional
-        Subtract each channel's mean over the current sequence before scaling.
-    standardize_channels : bool, optional
-        Learn a mean and population standard deviation for each channel across
-        all training residues, with each residue weighted equally. Apply these
-        frozen statistics before per-sequence centering/scaling. Zero-variance
-        channels use scale 1. Defaults to False.
-    spectra_types : tuple of str, optional
-        Export ``spectra`` and/or ``cross_spectra``; defaults to spectra only.
-    select_method : callable, optional
-        Boolean frequency selector, evaluated once during fit. The resulting
-        mask is reused unchanged, including for a stateful callable.
-    compute_amplitude, compute_phase : bool, optional
-        Export magnitudes (default True) and/or angles in radians (default False).
 
-    Attributes
-    ----------
-    spectrum_length_ : int
-        Fitted grid length, independent of later batch lengths.
-    frequency_, selected_frequencies_ : numpy.ndarray
-        Full grid including its periodic closure and the selected grid subset.
-    feature_names_out_ : numpy.ndarray of str
-        Frozen output column order, also available via get_feature_names_out.
-    channel_mean_, channel_scale_ : dict
-        Fitted channel offsets/scales, or 0/1 when standardization is disabled.
-    embedding_ : dict of dict
-        Independent snapshot of the original embedding before standardization.
-    n_features_out_ : int
-        Number of output features.
+def _jsonable(value):
+    """Copy numerical provenance into JSON-safe values, including Z-plane axes."""
+    if isinstance(value, np.ndarray):
+        if np.iscomplexobj(value):
+            return {'real': value.real.tolist(), 'imaginary': value.imag.tolist()}
+        return value.tolist()
+    if isinstance(value, np.generic):
+        return _jsonable(value.item())
+    if isinstance(value, complex):
+        return {'real': value.real, 'imaginary': value.imag}
+    if isinstance(value, dict):
+        return {k: _jsonable(v) for k,v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(v) for v in value]
+    return deepcopy(value)
 
-    Notes
-    -----
-    Put this transformer inside a Pipeline before cross-validation so grid and
-    channel statistics are fitted only on each training fold. Labels are ignored.
-    Output is a float64 array; ``set_output(transform="pandas")`` is also supported.
-    Use set_params followed by fit to change configuration. Direct edits to
-    constructor parameters take effect on the next fit; transform uses snapshots.
-    This transformer handles single sequences, not paired chains.
+
+class SequenceTransformer(TransformerMixin, BaseEstimator):
+    """Fit one coefficient-feature schema for every transform and single/paired inputs.
+
+    method selects fourier, z, mellin, or wavelet. embedding defaults to BLOSUM100.
+    length defaults to the next power of two covering training chains only.
+    Longer held-out chains raise. normalization and center operate on each real
+    chain before padding. standardize_channels learns training-residue moments.
+
+    component is amplitude, phase, real, imaginary, or an ordered tuple thereof.
+    kinds selects coefficients and/or cross_coefficients. selector receives a
+    dictionary of coordinate arrays and returns a same-shape boolean mask; an
+    explicit boolean mask is also accepted. It is evaluated only at fit, copied,
+    and frozen. Transform-specific options (radius, mellin_c, wavelet, level,
+    mode) go in transform_options. With paired=True, X contains (A, B) samples
+    and features describe all ordered A/B channel products. Non-Fourier products
+    remain coefficient products rather than frequency-domain cross-spectra.
+
+    Use inside a Pipeline so grid and channel moments fit within each CV fold.
+    get_feature_metadata returns independent JSON-safe provenance. set_output
+    supports pandas. Constructor mutations apply only after refitting; set_params
+    invalidates fit. The SpectralTransformer compatibility subclass delegates
+    here while preserving the original Fourier names, selection, and closure.
+    """
+
+    def __init__(self, *, embedding=None, method="fourier", length=None,
+                 normalization="none", center=False, standardize_channels=False,
+                 component="amplitude", transform_options=None, selector=None,
+                 kinds=("coefficients",), paired=False):
+        self.embedding = embedding
+        self.method = method
+        self.length = length
+        self.normalization = normalization
+        self.center = center
+        self.standardize_channels = standardize_channels
+        self.component = component
+        self.transform_options = transform_options
+        self.selector = selector
+        self.kinds = kinds
+        self.paired = paired
+
+    def __setstate__(self, state):
+        """Upgrade fitted snapshots saved by the preceding two-interface API."""
+        super().__setstate__(state)
+        if 'method' in vars(self):
+            for name, value in [('selector', None), ('kinds', ('coefficients',)), ('paired', False)]:
+                if not hasattr(self, name):
+                    setattr(self, name, value)
+        if not hasattr(self, 'feature_names_out_'):
+            return
+        if not hasattr(self, 'settings_') and hasattr(self, 'spectrum_length_'):
+            self.length_ = self.spectrum_length_
+            self.settings_ = dict(method='fourier', length=self.length_,
+                                  normalization=self.normalization_, center=self.center_)
+            self.component_ = tuple(c for c, enabled in
+                [('amplitude', self.compute_amplitude_), ('phase', self.compute_phase_)] if enabled)
+            self.kinds_ = tuple('coefficients' if k == 'spectra' else 'cross_coefficients'
+                                for k in self.spectra_types_)
+            self.coordinates_ = {'frequency': self.frequency_.copy()}
+            self.legacy_, self.paired_ = True, False
+            self.transform_metadata_ = dict(transform='fourier', length=self.length_,
+                normalization=self.normalization_, center=self.center_)
+        elif hasattr(self, 'settings_') and not hasattr(self, 'selected_mask_'):
+            count = len(next(iter(self.coordinates_.values())))
+            self.selected_mask_ = np.ones(count, dtype=bool)
+            self.kinds_, self.legacy_, self.paired_ = ('coefficients',), False, False
+            self.standardize_channels_ = bool(self.standardize_channels)
+            self.normalization_ = self.settings_['normalization']
+            self.center_ = self.settings_['center']
+            self.package_version_ = __version__
+
+    def _configuration(self):
+        """Translate constructor settings; compatibility subclasses only adapt this."""
+        return dict(method=self.method, length=self.length, normalization=self.normalization,
+            center=self.center, standardize=self.standardize_channels, component=self.component,
+            options=self.transform_options, selector=self.selector, kinds=self.kinds,
+            paired=self.paired, legacy=False, embedding=self.embedding)
+
+    def set_params(self, **params):
+        """Change settings and invalidate the fitted schema until the next fit."""
+        result = super().set_params(**params)
+        if params:
+            self._clear_fit()
+        return result
+
+    def _clear_fit(self):
+        """Remove old fitted state before every fit, including unsuccessful refits."""
+        for name in list(vars(self)):
+            if name.endswith('_') and not name.startswith('_'):
+                delattr(self, name)
+
+    @staticmethod
+    def _result(sample, embedding, settings, paired, legacy):
+        """Use the common numerical engine, with an optional old closed-bin view."""
+        result = (transform_pair(*sample, embedding, **settings) if paired
+                  else transform_sequence(sample, embedding, **settings))
+        return result._with_periodic_closure() if legacy else result
+
+    @staticmethod
+    def _features(result, component, kinds, selector, legacy):
+        """Use the shared export engine for both primary and compatibility names."""
+        if not legacy:
+            return result.features(component, kinds=kinds, selector=selector)
+        datasets = {kind: (result.coefficients if kind == 'coefficients'
+                           else result.cross().coefficients) for kind in kinds}
+        return _export_features(datasets, result.coordinates, 'fourier', component,
+                                selector, legacy=True)
+
+    def fit(self, X, y=None):
+        """Freeze training-only grid, channel moments, selection, and column order."""
+        self._clear_fit()
+        config = self._configuration()
+        validate_preprocessing(config['normalization'], config['center'])
+        if any(not isinstance(config[k], (bool, np.bool_)) for k in ('standardize', 'paired')):
+            raise ValueError('standardize_channels and paired must be booleans')
+        samples = _samples(X, config['paired'])
+        chains = [s for pair in samples for s in pair] if config['paired'] else samples
+        length = _length(config['length'], max(map(len, chains)))
+        embedding = _copy_embedding(b100 if config['embedding'] is None else config['embedding'])
+        means, scales, effective = _channel_statistics(chains, embedding, config['standardize'])
+        options = {} if config['options'] is None else deepcopy(config['options'])
+        allowed = {'radius', 'mellin_c', 'wavelet', 'level', 'mode'}
+        if not isinstance(options, Mapping) or not set(options) <= allowed:
+            raise ValueError(f'transform_options must be a mapping using {sorted(allowed)}')
+        settings = dict(method=config['method'], length=length,
+            normalization=config['normalization'], center=bool(config['center']), **options)
+        result = self._result(samples[0], effective, settings, config['paired'], config['legacy'])
+        mask = _selection(result.coordinates, config['selector'])
+        if not mask.any():
+            raise ValueError('selector must select at least one coefficient')
+        component, kinds = deepcopy(config['component']), deepcopy(config['kinds'])
+        values, names = self._features(result, component, kinds, mask, config['legacy'])
+        if not names.size or not np.isfinite(values).all():
+            raise ValueError('select at least one finite output feature')
+        # Commit only after every configuration/schema check has succeeded.
+        self.length_, self.settings_ = length, deepcopy(settings)
+        self.embedding_, self.effective_embedding_ = embedding, effective
+        self.channel_mean_, self.channel_scale_ = means, scales
+        self.component_, self.kinds_ = component, kinds
+        self.selected_mask_ = mask.copy()
+        self.paired_, self.legacy_ = bool(config['paired']), config['legacy']
+        self.coordinates_ = deepcopy(result.coordinates)
+        self.transform_metadata_ = {k: deepcopy(v) for k,v in result.metadata.items()
+                                    if k not in ('sequence_length', 'sequence_lengths')}
+        self.feature_names_out_, self.n_features_out_ = names.copy(), len(names)
+        self.package_version_ = __version__
+        self.standardize_channels_ = bool(config['standardize'])
+        self.normalization_, self.center_ = config['normalization'], bool(config['center'])
+        if config['legacy']:
+            self.spectrum_length_ = length
+            self.frequency_ = self.coordinates_['frequency'].copy()
+            self.selected_frequencies_ = self.frequency_[mask].copy()
+            self.spectra_types_ = tuple('spectra' if k == 'coefficients' else 'cross_spectra'
+                                       for k in kinds)
+            self.compute_amplitude_ = 'amplitude' in component
+            self.compute_phase_ = 'phase' in component
+        return self
+
+    def transform(self, X):
+        """Apply only frozen settings without changing grids, moments, or selection."""
+        check_is_fitted(self, ['feature_names_out_', 'settings_'])
+        samples = _samples(X, self.paired_)
+        chains = [s for pair in samples for s in pair] if self.paired_ else samples
+        if max(map(len, chains)) > self.length_:
+            raise ValueError('sequence exceeds fitted length; choose a larger explicit grid and refit')
+        rows = []
+        for sample in samples:
+            result = self._result(sample, self.effective_embedding_, self.settings_,
+                                  self.paired_, self.legacy_)
+            values, names = self._features(result, self.component_, self.kinds_,
+                                           self.selected_mask_, self.legacy_)
+            if not np.array_equal(names, self.feature_names_out_):
+                raise ValueError('computed features do not match fitted schema')
+            rows.append(values)
+        return np.asarray(rows, dtype=float)
+
+    def fit_transform(self, X, y=None, **fit_params):
+        """Materialize generators only once, then use the same fit/transform path."""
+        if fit_params:
+            raise TypeError('no additional fit parameters are supported')
+        self._clear_fit()
+        samples = _samples(X, self._configuration()['paired'])
+        return self.fit(samples, y).transform(samples)
+
+    def get_feature_names_out(self, input_features=None):
+        """Return independent feature names in output-column order."""
+        check_is_fitted(self, ['feature_names_out_'])
+        if input_features is not None and len(input_features) != (2 if self.paired_ else 1):
+            raise ValueError('input_features must match the single/paired sequence input')
+        return self.feature_names_out_.copy()
+
+    def get_feature_metadata(self):
+        """Return independent JSON-safe grids, scores, moments, controls, and names."""
+        check_is_fitted(self, ['feature_names_out_'])
+        return _jsonable(dict(package='Protspect', package_version=self.package_version_,
+            settings=self.settings_, paired=self.paired_, component=self.component_, kinds=self.kinds_,
+            standardize_channels=self.standardize_channels_, embedding=self.embedding_,
+            channel_weighting='one weight per training residue; padding excluded',
+            channel_mean=self.channel_mean_, channel_scale=self.channel_scale_,
+            transform_metadata=self.transform_metadata_, coordinates=self.coordinates_,
+            selected_mask=self.selected_mask_, feature_names=self.feature_names_out_))
+
+
+class SpectralTransformer(SequenceTransformer):
+    """Compatibility adapter for the original fitted Fourier feature API.
+
+    All fitting, transformation, channel preprocessing, and feature extraction
+    delegate to SequenceTransformer. The original constructor, closed frequency
+    grid, Amp_/Phase_ feature names, and get_feature_metadata schema are preserved.
+    New code should use SequenceTransformer for every transform.
     """
 
     def __init__(self, *, embedding=None, spectrum_length=None, normalization="none",
@@ -144,240 +336,43 @@ class SpectralTransformer(TransformerMixin, BaseEstimator):
         self.compute_amplitude = compute_amplitude
         self.compute_phase = compute_phase
 
-    def _clear_fit(self):
-        """Invalidate fitted snapshots without altering constructor parameters."""
-        for name in list(vars(self)):
-            if name.endswith('_') and not name.startswith('_'):
-                delattr(self, name)
-
-    def set_params(self, **params):
-        """Set estimator parameters and invalidate any previously fitted schema."""
-        result = super().set_params(**params)
-        if params:
-            self._clear_fit()
-        return result
-
-    def fit(self, X, y=None):
-        """Freeze grid, selector, embedding, and channel moments from X alone.
-
-        X is a nonempty iterable of nonempty sequence strings. y is accepted for
-        Pipeline compatibility and ignored. Return this fitted transformer.
-        """
-        self._clear_fit()
-        sequences = _sequences(X)
-        validate_preprocessing(self.normalization, self.center)
-        for name in ('standardize_channels', 'compute_amplitude', 'compute_phase'):
+    def _configuration(self):
+        """Translate old argument names and frequency selectors into the shared API."""
+        for name in ('compute_amplitude', 'compute_phase'):
             if not isinstance(getattr(self, name), (bool, np.bool_)):
-                raise ValueError(f"{name} must be a boolean")
+                raise ValueError(f'{name} must be a boolean')
         if not self.compute_amplitude and not self.compute_phase:
-            raise ValueError("enable amplitude and/or phase features")
-        if not isinstance(self.spectra_types, (list, tuple)) or not self.spectra_types:
-            raise ValueError("spectra_types must be a nonempty list or tuple")
-        kinds = tuple(self.spectra_types)
-        if any(kind not in ('spectra', 'cross_spectra') for kind in kinds) or len(set(kinds)) != len(kinds):
-            raise ValueError("spectra_types must uniquely select spectra and/or cross_spectra")
-        length = _length(self.spectrum_length, max(map(len, sequences)))
-        embedding = _copy_embedding(b100 if self.embedding is None else self.embedding)
-        means, scales, effective = _channel_statistics(sequences, embedding, self.standardize_channels)
-        bins = fftshift(fftfreq(length))
-        frequencies = np.append(bins, bins[0] + 1)
+            raise ValueError('enable amplitude and/or phase features')
+        kinds = self.spectra_types
+        if (not isinstance(kinds, (list, tuple)) or not kinds or
+                len(set(kinds)) != len(kinds) or
+                any(k not in ('spectra', 'cross_spectra') for k in kinds)):
+            raise ValueError('spectra_types must uniquely select spectra and/or cross_spectra')
         if not callable(self.select_method):
-            raise ValueError("select_method must be callable")
-        mask = np.asarray(self.select_method(frequencies.copy()))
-        if mask.dtype != bool or mask.shape != frequencies.shape or not mask.any():
-            raise ValueError("select_method must select at least one bin with a same-shape boolean mask")
-        # Build fitted state on a temporary object, so failed fits leave no usable
-        # old or partially updated model behind.
-        candidate = type(self)()
-        candidate.package_version_ = __version__
-        candidate.standardize_channels_ = bool(self.standardize_channels)
-        candidate.spectrum_length_ = length
-        candidate.frequency_ = frequencies.copy()
-        candidate.selected_mask_ = mask.copy()
-        candidate.selected_frequencies_ = frequencies[mask].copy()
-        candidate.embedding_ = embedding
-        candidate.effective_embedding_ = effective
-        candidate.channel_mean_, candidate.channel_scale_ = means, scales
-        candidate.normalization_, candidate.center_ = self.normalization, bool(self.center)
-        candidate.spectra_types_ = kinds
-        candidate.compute_amplitude_ = bool(self.compute_amplitude)
-        candidate.compute_phase_ = bool(self.compute_phase)
-        first = candidate._row(sequences[0])
-        candidate.feature_names_out_ = np.asarray(list(first), dtype=object)
-        candidate.n_features_out_ = len(first)
-        self.__dict__.update({name: value for name, value in vars(candidate).items()
-                              if name.endswith('_') and not name.startswith('_')})
-        return self
-
-    def _row(self, sequence):
-        """Compute one feature dictionary using only frozen fitted settings."""
-        item = SequenceFFT(sequence)
-        item.embed_sequence(self.effective_embedding_)
-        item.compute_spectra(self.spectrum_length_, normalization=self.normalization_, center=self.center_)
-        if 'cross_spectra' in self.spectra_types_:
-            item.compute_cross_spectra()
-        return item.compute_spectral_properties(self.spectra_types_,
-            lambda frequencies: self.selected_mask_, self.compute_amplitude_, self.compute_phase_)
-
-    def transform(self, X):
-        """Return fixed-width features without updating fitted statistics or bins.
-
-        Unknown residues, empty sequences, and sequences exceeding the fitted
-        grid raise ValueError. transform never refits or silently truncates.
-        """
-        check_is_fitted(self, ['feature_names_out_', 'spectrum_length_'])
-        sequences = _sequences(X)
-        if max(map(len, sequences)) > self.spectrum_length_:
-            raise ValueError("sequence exceeds fitted spectrum_length_; choose a larger explicit grid and refit")
-        rows = []
-        for sequence in sequences:
-            row = self._row(sequence)
-            if list(row) != self.feature_names_out_.tolist():
-                raise ValueError("computed feature columns do not match the fitted schema")
-            rows.append(list(row.values()))
-        values = np.asarray(rows, dtype=float)
-        if not np.isfinite(values).all():
-            raise ValueError("spectral features must be finite")
-        return values
-
-    def fit_transform(self, X, y=None, **fit_params):
-        """Fit and transform, materializing generators only once."""
-        if fit_params:
-            raise TypeError("SpectralTransformer accepts no additional fit parameters")
-        sequences = _sequences(X)
-        return self.fit(sequences, y).transform(sequences)
-
-    def get_feature_names_out(self, input_features=None):
-        """Return a copy of the fitted output names in transform column order."""
-        check_is_fitted(self, ['feature_names_out_'])
-        if input_features is not None and len(input_features) != 1:
-            raise ValueError("SpectralTransformer accepts one sequence input per sample")
-        return self.feature_names_out_.copy()
+            raise ValueError('select_method must be callable')
+        return dict(method='fourier', length=self.spectrum_length,
+            normalization=self.normalization, center=self.center,
+            standardize=self.standardize_channels, embedding=self.embedding,
+            component=tuple(c for c, enabled in [('amplitude', self.compute_amplitude),
+                ('phase', self.compute_phase)] if enabled), options=None,
+            selector=lambda coordinates: self.select_method(coordinates['frequency']),
+            kinds=tuple('coefficients' if k == 'spectra' else 'cross_coefficients' for k in kinds),
+            paired=False, legacy=True)
 
     def get_feature_metadata(self):
-        """Return independent, JSON-serializable fitted feature provenance.
-
-        Includes exact embedding scores, fitted channel moments, full and
-        selected grids, the selector mask, normalization options, and column
-        order. Store this beside exported features. It describes the fitted
-        representation; use pickle/joblib to persist the executable Pipeline.
-        """
+        """Preserve the original independent JSON-serializable Fourier provenance."""
         check_is_fitted(self, ['feature_names_out_'])
         return {
-            "package": "Protspect", "package_version": self.package_version_,
-            "spectrum_length": self.spectrum_length_,
-            "normalization": self.normalization_, "center": self.center_,
-            "standardize_channels": self.standardize_channels_,
-            "channel_weighting": "one weight per training residue; padding excluded",
-            "channel_mean": dict(self.channel_mean_), "channel_scale": dict(self.channel_scale_),
-            "embedding": deepcopy(self.embedding_),
-            "frequency": self.frequency_.tolist(),
-            "selected_mask": self.selected_mask_.tolist(),
-            "selected_frequencies": self.selected_frequencies_.tolist(),
-            "spectra_types": list(self.spectra_types_),
-            "compute_amplitude": self.compute_amplitude_, "compute_phase": self.compute_phase_,
-            "feature_names": self.get_feature_names_out().tolist(),
+            'package': 'Protspect', 'package_version': self.package_version_,
+            'spectrum_length': self.spectrum_length_,
+            'normalization': self.normalization_, 'center': self.center_,
+            'standardize_channels': self.standardize_channels_,
+            'channel_weighting': 'one weight per training residue; padding excluded',
+            'channel_mean': dict(self.channel_mean_), 'channel_scale': dict(self.channel_scale_),
+            'embedding': deepcopy(self.embedding_), 'frequency': self.frequency_.tolist(),
+            'selected_mask': self.selected_mask_.tolist(),
+            'selected_frequencies': self.selected_frequencies_.tolist(),
+            'spectra_types': list(self.spectra_types_),
+            'compute_amplitude': self.compute_amplitude_, 'compute_phase': self.compute_phase_,
+            'feature_names': self.get_feature_names_out().tolist(),
         }
-
-
-class SequenceTransformer(TransformerMixin, BaseEstimator):
-    """Fixed-width Fourier, Z, Mellin, or wavelet features for sklearn pipelines.
-
-    ``method`` selects fourier, z, mellin, or wavelet; ``component`` selects
-    amplitude, phase, real, or imaginary output. ``embedding`` defaults to BLOSUM100.
-    ``normalization`` and ``center`` act on actual residues before padding.
-    ``transform_options`` is a mapping of keyword arguments to
-    :func:`protspect.transform_sequence` (radius, mellin_c, wavelet, level, mode).
-    ``length`` is learned from training sequences alone when omitted. Longer
-    held-out sequences raise rather than changing the schema. Channel moments
-    are also learned from training residues alone when standardization is enabled.
-    Constructor mutations take effect only on refit; fitted settings are copied.
-    """
-
-    def __init__(self, *, embedding=None, method="fourier", length=None,
-                 normalization="none", center=False, standardize_channels=False,
-                 component="amplitude", transform_options=None):
-        self.embedding = embedding
-        self.method = method
-        self.length = length
-        self.normalization = normalization
-        self.center = center
-        self.standardize_channels = standardize_channels
-        self.component = component
-        self.transform_options = transform_options
-
-    def set_params(self, **params):
-        """Invalidate fitted settings when estimator parameters change."""
-        result = super().set_params(**params)
-        if params:
-            self._clear_fit()
-        return result
-
-    def _clear_fit(self):
-        """Remove fitted state, including after an unsuccessful refit."""
-        for name in list(vars(self)):
-            if name.endswith('_') and not name.startswith('_'):
-                delattr(self, name)
-
-    def fit(self, X, y=None):
-        """Freeze training-only length, embedding, options, and output schema."""
-        from .transforms import transform_sequence
-
-        self._clear_fit()
-        sequences = _sequences(X)
-        length = _length(self.length, max(map(len, sequences)))
-        if not isinstance(self.standardize_channels, (bool, np.bool_)):
-            raise ValueError("standardize_channels must be boolean")
-        embedding = _copy_embedding(b100 if self.embedding is None else self.embedding)
-        means, scales, effective = _channel_statistics(sequences, embedding, self.standardize_channels)
-        options = {} if self.transform_options is None else deepcopy(self.transform_options)
-        allowed = {'radius', 'mellin_c', 'wavelet', 'level', 'mode'}
-        if not isinstance(options, dict) or not set(options) <= allowed:
-            raise ValueError(f"transform_options must be a mapping using {sorted(allowed)}")
-        settings = dict(transform=self.method, length=length,
-                        normalization=self.normalization, center=self.center, **options)
-        names = None
-        for sequence in sequences:
-            result = transform_sequence(sequence, effective, **settings)
-            _, current_names = result.features(self.component)
-            if names is not None and not np.array_equal(names, current_names):
-                raise ValueError("training sequences produced inconsistent feature schemas")
-            names = current_names
-        self.length_ = length
-        self.embedding_, self.effective_embedding_ = embedding, effective
-        self.channel_mean_, self.channel_scale_ = means, scales
-        self.settings_, self.component_ = deepcopy(settings), self.component
-        self.feature_names_out_ = names.copy()
-        self.n_features_out_ = len(names)
-        # Metadata excludes training-sequence-specific residue count.
-        self.transform_metadata_ = {k: deepcopy(v) for k, v in result.metadata.items()
-                                    if k != 'sequence_length'}
-        self.coordinates_ = deepcopy(result.coordinates)
-        return self
-
-    def transform(self, X):
-        """Apply only frozen fitted settings; return channel-major float features."""
-        from .transforms import transform_sequence
-
-        check_is_fitted(self, ['feature_names_out_', 'settings_'])
-        sequences = _sequences(X)
-        rows = []
-        for sequence in sequences:
-            result = transform_sequence(sequence, self.effective_embedding_, **self.settings_)
-            values, names = result.features(self.component_)
-            if not np.array_equal(names, self.feature_names_out_):
-                raise ValueError("computed features do not match the fitted schema")
-            rows.append(values)
-        return np.asarray(rows, dtype=float)
-
-    def fit_transform(self, X, y=None, **fit_params):
-        """Materialize generators once before fitting and transforming."""
-        if fit_params:
-            raise TypeError("fit parameters are not supported")
-        sequences = _sequences(X)
-        return self.fit(sequences, y).transform(sequences)
-
-    def get_feature_names_out(self, input_features=None):
-        """Return fitted feature names in output column order."""
-        check_is_fitted(self, ['feature_names_out_'])
-        return self.feature_names_out_.copy()

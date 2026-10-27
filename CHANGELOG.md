@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Unify single sequences, SequenceSet, ComplexSet, and sklearn around one
+  transform/export engine. Add coordinate selectors, cross-coefficient exports,
+  paired pipelines, and shared metadata. Preserve old Fourier APIs as adapters.
+
 - Add explicit Fourier/Z/Mellin/discrete-wavelet coefficient transforms, optional
   PyWavelets dependency, and fixed-schema SequenceTransformer integration.
 
