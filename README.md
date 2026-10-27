@@ -4,14 +4,22 @@
 peptides using numeric residue-property channels. This is the original sequence
 featurization method, separate from the subsequent protein language-model work.
 
-The repository is `biomodsquad/protein-sequence-spectral-analysis`. The planned
-PyPI distribution is **Protspect**, imported as **`protspect`**. The original
+The repository is `biomodsquad/protein-sequence-spectral-analysis`. The
+[PyPI distribution](https://pypi.org/project/Protspect/) is **Protspect**, imported as **`protspect`**. The original
 `ProSpect` distribution name conflicts with an unrelated existing PyPI package.
-This is an alpha release candidate; no release has been uploaded by this change.
+Version `0.1.0a1` is the first published alpha; APIs may change.
 
-## Install locally
+## Install
 
-Requires Python 3.10 or later and NumPy, SciPy, and pandas.
+Requires Python 3.10 or later. Install the published alpha and its dependencies:
+
+```bash
+python -m pip install Protspect==0.1.0a1
+# Optional scikit-learn integration:
+python -m pip install 'Protspect[ml]==0.1.0a1'
+```
+
+For development, install from the repository:
 
 ```bash
 git clone https://github.com/biomodsquad/protein-sequence-spectral-analysis.git
@@ -21,8 +29,8 @@ source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-Until the first release is published, install from this checkout. Do not install
-`prospect` from PyPI expecting this library.
+The distribution is named `Protspect`. The unrelated `prospect` package is a
+different project.
 
 ## Generate sequence features
 
@@ -163,8 +171,8 @@ wheel and source archives into fresh environments outside the checkout. Exact
 minimum dependencies are checked on Python 3.10. See
 [the compatibility policy](docs/COMPATIBILITY.md) for scope and evidence. See [RELEASE_REVIEW.md](RELEASE_REVIEW.md) for findings,
 validation evidence, and the remaining release decisions. The initial alpha version is
-`0.1.0a1`. Name availability is not a reservation; confirm it and
-complete TestPyPI installation checks before uploading to PyPI.
+`0.1.0a1`. The [release record](docs/RELEASES.md) links the successful TestPyPI rehearsal
+and production download/install checks.
 
 ## Citation and project contact
 

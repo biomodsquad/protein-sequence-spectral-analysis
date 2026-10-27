@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.1.0a1 — unreleased
+## 0.1.0a1 — 2026-10-27
 
 First packaged alpha of Protspect, the protein/peptide spectral featurization
-method previously developed as FFTpro. No PyPI release has been made yet.
+method previously developed as FFTpro. Published to PyPI after the TestPyPI
+rehearsal; see [the release record](docs/RELEASES.md).
 
 ### Added
 
