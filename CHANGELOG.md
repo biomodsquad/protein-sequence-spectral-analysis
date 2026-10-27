@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add AAindex2/3 matrix catalogues, explicit section download helpers, native
+  axis/storage provenance, and canonical row/column profile adapters. Preserve
+  asymmetric/rectangular matrices and reject missing canonical scores.
+
+
 - Add offline AAindex1 parsing, search, channel selection, explicit official
   downloads, SHA256 pinning, and selected-record provenance. Missing values
   are rejected during embedding conversion; no database is redistributed.
