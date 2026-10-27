@@ -190,3 +190,20 @@ validation/abp_gn_fft1024_seed7/test_predictions.csv
 
 # Local compatibility logs are summarized in docs; CI uploads its own artifacts
 validation/compatibility-local/
+
+# User-managed AAindex snapshots and exported model provenance
+.aaindex/
+
+# Local atlas distance cache and bundled interactive viewer
+validation/embedding_atlas/pairwise_local.npz
+validation/embedding_atlas/interactive_atlas.html
+
+# Recomputable notebook outputs
+validation/embedding_atlas/*.executed.ipynb
+
+# Local antimicrobial transform benchmark runs and predictions
+validation/amp_transform_mlp/
+
+# Documentation environment and generated previews
+.venv-docs/
+docs/_build/

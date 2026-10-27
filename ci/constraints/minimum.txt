@@ -8,3 +8,4 @@ threadpoolctl==3.0.0
 pytest==7.0.0
 # The source-install check also exercises the minimum declared build backend.
 setuptools==77.0.1
+PyWavelets==1.4.0

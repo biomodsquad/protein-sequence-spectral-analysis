@@ -1,6 +1,8 @@
 """Protspect: spectral features for protein and peptide sequences."""
 
-from .features import ComplexSet, SequenceFFT, SequenceSet
+from .features import ComplexSet, Sequence, SequenceFFT, SequenceSet
 
-__all__ = ["ComplexSet", "SequenceFFT", "SequenceSet"]
-__version__ = "0.1.0a1"
+from .transforms import TransformResult, transform_sequence, transform_pair
+
+__all__ = ["Sequence", "ComplexSet", "SequenceFFT", "SequenceSet", "TransformResult", "transform_sequence", "transform_pair"]
+__version__ = "0.1.0a2"

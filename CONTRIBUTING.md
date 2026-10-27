@@ -36,3 +36,10 @@ verify redistribution terms before adding datasets.
 Contributions to the package are distributed under its existing BSD-3-Clause
 license. Keep third-party attribution and licensing separate from package
 authorship; dataset and research dependencies retain their own terms.
+
+## Documentation
+
+Install `.[docs]` and follow [the documentation contributor guide](docs/contributing.rst).
+The strict Sphinx HTML/doctest builds and the three self-contained notebook
+executions run in documentation CI. User-supplied artwork is retained unchanged;
+rebuild other figures with `python -m docs.generate_tutorial_figures`.

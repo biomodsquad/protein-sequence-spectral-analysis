@@ -1,0 +1,19 @@
+{
+  "documentation_url": "https://biomodsquad.org/protein-sequence-spectral-analysis/",
+  "publication_date": "2026-10-27",
+  "workflow_run": "https://github.com/biomodsquad/protein-sequence-spectral-analysis/actions/runs/40584365359",
+  "source_branch": "codex/documentation-tutorials",
+  "source_commit": "a2591b27342250e425727d9f83959a1aff9eef7e",
+  "build": "success",
+  "deployment": "success",
+  "https_enforced": true,
+  "public_checks": {
+    "home_http_status": 200,
+    "matrix_tutorial_http_status": 200,
+    "example_gallery_http_status": 200,
+    "downloaded_notebook_valid": true,
+    "logo_matches_supplied_artwork": true
+  },
+  "logo_sha256": "43c6cdc6c2a00d2e880d6024c741ab58fb1ef63dcb279db27e92903af0acf8da",
+  "scope": "Development documentation publication only. Package PRs remain unmerged; no PyPI release."
+}

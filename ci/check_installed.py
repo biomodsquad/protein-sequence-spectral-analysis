@@ -15,12 +15,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 CORE_SMOKE = '''
 import importlib.util
+from importlib.resources import files
 import sys
 from pathlib import Path
 import protspect
 from protspect import ComplexSet, SequenceFFT, SequenceSet
 from FFTpro.features import SequenceFFT as LegacyFFT
 assert LegacyFFT is SequenceFFT
+assert len(list(files('protspect.examples').iterdir())) >= 4
+for name in ['01_matrix_to_features', '02_transforms_and_pairs', '03_fitted_pipeline']:
+    assert files('protspect.examples').joinpath(name + '.ipynb').is_file()
 assert 'sklearn' not in sys.modules
 assert importlib.util.find_spec('sklearn') is None
 assert Path(protspect.__file__).resolve().is_relative_to(Path(sys.prefix).resolve())
@@ -98,7 +102,7 @@ def check_artifact(artifact, output, constraints=None):
         command([python, '-c', CORE_SMOKE], work, env, log)
         command([python, '-m', 'pytest', '-q', '-ra', suite/'tests'], work, env, log)
         command([python, ROOT/'examples/basic_features.py'], work, env, log)
-        command([python, '-m', 'pip', 'install', 'Protspect[validation] @ '+artifact.as_uri()], work, env, log)
+        command([python, '-m', 'pip', 'install', 'Protspect[validation,wavelets] @ '+artifact.as_uri()], work, env, log)
         command([python, '-m', 'pip', 'check'], work, env, log)
         optional_env = json.loads(command([python, '-c', ENVIRONMENT], work, env, log))
         command([python, '-m', 'pytest', '-q', '-ra', suite/'tests'], work, env, log)

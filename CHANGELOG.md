@@ -1,6 +1,26 @@
 # Changelog
 
-## Unreleased
+## 0.1.0a2 — 2026-10-27
+
+- Add a Sphinx/Furo documentation site with eight guided tutorials, generated
+  figures, API reference, three bundled executable notebooks, and docs CI.
+  Include the supplied project logo and matrix/sequence-transform illustration.
+
+- Unify single sequences, SequenceSet, ComplexSet, and sklearn around one
+  transform/export engine. Add coordinate selectors, cross-coefficient exports,
+  paired pipelines, and shared metadata. Preserve old Fourier APIs as adapters.
+
+- Add explicit Fourier/Z/Mellin/discrete-wavelet coefficient transforms, optional
+  PyWavelets dependency, and fixed-schema SequenceTransformer integration.
+
+- Add AAindex2/3 matrix catalogues, explicit section download helpers, native
+  axis/storage provenance, and canonical row/column profile adapters. Preserve
+  asymmetric/rectangular matrices and reject missing canonical scores.
+
+
+- Add offline AAindex1 parsing, search, channel selection, explicit official
+  downloads, SHA256 pinning, and selected-record provenance. Missing values
+  are rejected during embedding conversion; no database is redistributed.
 
 - Add all ten Kidera residue-factor channels, with `kidera_factors()` for
   independent embedding dictionaries and `kidera` for read-only access.

@@ -4,7 +4,7 @@ message: >-
   and cite any datasets and external methods separately.
 title: "Protspect: protein sequence spectral analysis"
 type: software
-version: 0.1.0a1
+version: 0.1.0a2
 authors:
   - name: Biomolecular Systems Modeling and Design Group
 repository-code: "https://github.com/biomodsquad/protein-sequence-spectral-analysis"

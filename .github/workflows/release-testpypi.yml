@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install '.[dev,validation]'
+      - run: python -m pip install '.[dev,validation,wavelets]'
       - run: python -m ruff check .
       - run: python -m pytest -q
       - run: python -m build
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/project/Protspect/0.1.0a1/
+      url: https://test.pypi.org/project/Protspect/0.1.0a2/
     permissions:
       id-token: write
     steps:
@@ -64,7 +64,7 @@ jobs:
           name: testpypi-candidate
           path: candidate/
       - name: Download exact uploaded artifacts and compare SHA256 hashes
-        run: python ci/fetch_testpypi.py --version 0.1.0a1 --candidate-dir candidate --output-dir testpypi-dist
+        run: python ci/fetch_testpypi.py --version 0.1.0a2 --candidate-dir candidate --output-dir testpypi-dist
       - name: Test downloaded wheel and sdist with dependencies from production PyPI
         env:
           PIP_INDEX_URL: https://pypi.org/simple/
