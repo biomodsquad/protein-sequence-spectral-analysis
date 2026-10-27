@@ -7,6 +7,45 @@ analysis. The committed [results](../../validation/embedding_atlas/RESULTS.md)
 include quantitative similarities, cluster representatives, PCA/UMAP layouts,
 and PNG/PDF figures. Raw AAindex files are not redistributed.
 
+## Explore in a notebook
+
+Open [Embedding_atlas.ipynb](Embedding_atlas.ipynb) in Jupyter with this checkout
+as the working directory. Install the research-only notebook dependencies:
+
+```sh
+python -m pip install -r research/embedding_atlas/notebook_requirements.txt
+```
+
+Run cells in order once. Edit the configuration cells to choose source families,
+row/column orientations, signed versus sign-invariant vector comparisons,
+deduplication, whole-representation channel weighting, PCA components/axes,
+UMAP neighbors/minimum distance/seed/epochs, and clustering method/cuts.
+Colors, marker sizes, opacity, heatmap scales, and reference lookups are editable.
+Vector centering and unit normalization are fixed comparison conventions.
+
+Rerun the affected stage and its downstream cells after changing inputs. Plot-only
+changes do not require refitting. Fixed-seed UMAP layouts are cached in memory by
+input distances and effective parameters; restarting the kernel clears that cache.
+Cluster cuts and nearest neighbors always use the original geometry.
+
+The notebook reads `.aaindex/aaindex1`, `aaindex2`, and `aaindex3`. Set
+`DOWNLOAD_MISSING=True` to explicitly fetch absent snapshots. Reference checksum
+verification defaults to enabled; disable it deliberately when exploring a newer
+snapshot. Raw downloads, kernel caches, and optional exported runs stay under the
+ignored `.aaindex/` directory. Set `EXPORT_RUN=True` in the last cell to save a fresh
+run with coordinates, clusters, medoids, similarities, controls, and source hashes.
+The export cell rejects stale PCA, UMAP, or cluster results after input changes.
+
+For a fully executed local copy, including plots:
+
+```sh
+python -m research.embedding_atlas.execute_notebook \
+  --output validation/embedding_atlas/Embedding_atlas.executed.ipynb
+```
+
+Choose a fresh output filename for later executions. The large executed notebook
+is a local artifact; the clean editable notebook and execution helper are tracked.
+
 ## Reproduce
 
 Use an isolated Python 3.12 environment and install this branch plus the analysis
