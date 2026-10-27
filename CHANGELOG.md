@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add offline AAindex1 parsing, search, channel selection, explicit official
+  downloads, SHA256 pinning, and selected-record provenance. Missing values
+  are rejected during embedding conversion; no database is redistributed.
+
 - Add all ten Kidera residue-factor channels, with `kidera_factors()` for
   independent embedding dictionaries and `kidera` for read-only access.
   BLOSUM100 remains the default. See [representation provenance](docs/REPRESENTATIONS.md).
