@@ -200,3 +200,6 @@ validation/embedding_atlas/interactive_atlas.html
 
 # Recomputable notebook outputs
 validation/embedding_atlas/*.executed.ipynb
+
+# Local antimicrobial transform benchmark runs and predictions
+validation/amp_transform_mlp/

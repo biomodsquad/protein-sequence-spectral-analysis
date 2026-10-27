@@ -1,0 +1,229 @@
+{
+  "task": "ABP_GN Gram-negative antibacterial peptide classification",
+  "data_sha256": {
+    "train": "b9643fdb8273209ac5150f3e0d08d42268ad35bf7af42241cab8cb9d370407c7",
+    "test": "96b3d25f177726e925c464464a4cdd7e271f99a3044bfc14259fb92a40f3730b"
+  },
+  "train_n": 3562,
+  "test_n": 1973,
+  "split_seed": 7,
+  "validation_fraction": 0.2,
+  "model_seeds": [
+    7
+  ],
+  "length": 256,
+  "center": false,
+  "normalization": "none",
+  "transforms": {
+    "fourier": {
+      "component": "amplitude",
+      "options": {}
+    },
+    "z": {
+      "component": "amplitude",
+      "options": {
+        "radius": 1.01
+      }
+    },
+    "mellin": {
+      "component": "amplitude",
+      "options": {
+        "mellin_c": 0.0
+      }
+    },
+    "wavelet": {
+      "component": "amplitude",
+      "options": {
+        "wavelet": "haar",
+        "level": 4,
+        "mode": "periodization"
+      }
+    }
+  },
+  "embedding": "corrected BLOSUM100",
+  "candidates": [
+    {
+      "hidden_layer_sizes": [
+        64
+      ],
+      "alpha": 0.001
+    }
+  ],
+  "mlp_common": {
+    "activation": "relu",
+    "solver": "adam",
+    "learning_rate_init": 0.001,
+    "batch_size": 128,
+    "max_iter": 300,
+    "early_stopping": true,
+    "validation_fraction": 0.15,
+    "n_iter_no_change": 15,
+    "tol": 0.0001
+  },
+  "threshold": 0.5,
+  "threads": 1,
+  "selection": "validation balanced accuracy, MCC, average precision; test not used",
+  "test_status": "previously studied test set; exploratory",
+  "feature_info": {
+    "fourier": {
+      "count": 5120,
+      "metadata": {
+        "transform": "fourier",
+        "length": 256,
+        "normalization": "none",
+        "center": false
+      },
+      "component": "amplitude",
+      "seconds": 5.799802208959591
+    },
+    "z": {
+      "count": 5120,
+      "metadata": {
+        "transform": "z",
+        "length": 256,
+        "normalization": "none",
+        "center": false,
+        "radius": 1.01
+      },
+      "component": "amplitude",
+      "seconds": 5.839087416010443
+    },
+    "mellin": {
+      "count": 5120,
+      "metadata": {
+        "transform": "mellin",
+        "length": 256,
+        "normalization": "none",
+        "center": false,
+        "mellin_c": 0.0,
+        "position_origin": 1,
+        "convention": "unit-spacing finite Mellin sum, negative imaginary exponent"
+      },
+      "component": "amplitude",
+      "seconds": 89.76786316605285
+    },
+    "wavelet": {
+      "count": 5120,
+      "metadata": {
+        "transform": "wavelet",
+        "length": 256,
+        "normalization": "none",
+        "center": false,
+        "wavelet": "haar",
+        "level": 4,
+        "mode": "periodization",
+        "pywavelets_version": "1.7.0",
+        "padding": "right zero padding"
+      },
+      "component": "amplitude",
+      "seconds": 6.724882375041489
+    }
+  },
+  "trials": [
+    {
+      "transform": "fourier",
+      "seed": 7,
+      "candidate": 0,
+      "settings": {
+        "hidden_layer_sizes": [
+          64
+        ],
+        "alpha": 0.001
+      },
+      "validation": {
+        "accuracy": 0.879382889200561,
+        "balanced_accuracy": 0.8792524282613174,
+        "mcc": 0.7575511807117692,
+        "f1": 0.8877284595300261,
+        "roc_auc": 0.942791272519846,
+        "pr_auc": 0.9515479333729857,
+        "sensitivity": 0.8808290155440415,
+        "specificity": 0.8776758409785933
+      },
+      "warnings": []
+    },
+    {
+      "transform": "z",
+      "seed": 7,
+      "candidate": 0,
+      "settings": {
+        "hidden_layer_sizes": [
+          64
+        ],
+        "alpha": 0.001
+      },
+      "validation": {
+        "accuracy": 0.8667601683029453,
+        "balanced_accuracy": 0.8675943971732345,
+        "mcc": 0.7332741916173834,
+        "f1": 0.8745046235138706,
+        "roc_auc": 0.9471882873033227,
+        "pr_auc": 0.9558058525693491,
+        "sensitivity": 0.8575129533678757,
+        "specificity": 0.8776758409785933
+      },
+      "warnings": []
+    },
+    {
+      "transform": "mellin",
+      "seed": 7,
+      "candidate": 0,
+      "settings": {
+        "hidden_layer_sizes": [
+          64
+        ],
+        "alpha": 0.001
+      },
+      "validation": {
+        "accuracy": 0.7980364656381487,
+        "balanced_accuracy": 0.7957091473752596,
+        "mcc": 0.5926780331274194,
+        "f1": 0.8153846153846154,
+        "roc_auc": 0.8930574701716025,
+        "pr_auc": 0.9077440363515563,
+        "sensitivity": 0.8238341968911918,
+        "specificity": 0.7675840978593272
+      },
+      "warnings": []
+    },
+    {
+      "transform": "wavelet",
+      "seed": 7,
+      "candidate": 0,
+      "settings": {
+        "hidden_layer_sizes": [
+          64
+        ],
+        "alpha": 0.001
+      },
+      "validation": {
+        "accuracy": 0.8513323983169705,
+        "balanced_accuracy": 0.8517096861086023,
+        "mcc": 0.7018530686985403,
+        "f1": 0.8605263157894737,
+        "roc_auc": 0.9238801476763163,
+        "pr_auc": 0.9226918805116378,
+        "sensitivity": 0.8471502590673575,
+        "specificity": 0.8562691131498471
+      },
+      "warnings": []
+    }
+  ],
+  "versions": {
+    "numpy": "1.26.4",
+    "scipy": "1.13.1",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "PyWavelets": "1.7.0",
+    "matplotlib": "3.9.2"
+  },
+  "python": "3.12.2",
+  "source_sha256": {
+    "protspect/transforms.py": "eafc738cecda7a5c5e5defa25b4f00e9375c0b9afee43ccc2e5efd53333ab915",
+    "protspect/embeddings.py": "57d83736cd3ee8399b4974b81543d7ca4e83e4f3ba550a7d2a30dcecff843f76",
+    "protspect/preprocessing.py": "39986b5a19b2086c08b3f3cd5e344bc9ed261ef728be3262ce7daf45bbe3e782",
+    "examples/validate_amp.py": "864bd7c357caa9a843a7827e96dc2bf4666e7c2ff3d82dcf217787c4556e5d1c",
+    "research/AMP_transform_MLP.ipynb": "ea247e68f1834544644818fd110d5f56643efa5fd8f58a3181d4ffa3f96b3e15"
+  },
+  "feature_name_storage": "Full ordered names retained in local run report; determined by transform, channel order, component, and coefficient index."
+}
