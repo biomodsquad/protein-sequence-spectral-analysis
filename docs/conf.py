@@ -39,7 +39,7 @@ source_ref = os.environ.get("PROTSPECT_DOCS_REF", "main")
 html_theme_options = {
     "source_repository": "https://github.com/biomodsquad/protein-sequence-spectral-analysis/",
     "source_branch": source_ref, "source_directory": "docs/",
-    "announcement": "Development documentation: the unified API is not yet in PyPI 0.1.0a1.",
+    "announcement": "Protspect 0.1.0a2 alpha: APIs may change.",
     "light_css_variables": {"color-brand-primary": "#205b87", "color-brand-content": "#205b87"},
     "dark_css_variables": {"color-brand-primary": "#7ac4ef", "color-brand-content": "#7ac4ef"},
 }

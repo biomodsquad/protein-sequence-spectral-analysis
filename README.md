@@ -9,12 +9,11 @@ featurization method, separate from the subsequent protein language-model work.
 The repository is `biomodsquad/protein-sequence-spectral-analysis`. The
 [PyPI distribution](https://pypi.org/project/Protspect/) is **Protspect**, imported as **`protspect`**. The original
 `ProSpect` distribution name conflicts with an unrelated existing PyPI package.
-Version `0.1.0a1` is the first published alpha; APIs may change.
+Version `0.1.0a2` is the second alpha; APIs may change.
 
 ## Documentation and tutorials
 
-Read the [online documentation](https://biomodsquad.org/protein-sequence-spectral-analysis/), published as a development
-snapshot of the unified API. The published PyPI alpha predates these additions.
+Read the [online documentation](https://biomodsquad.org/protein-sequence-spectral-analysis/), covering the unified API in alpha 0.1.0a2.
 
 The [documentation source](docs/index.rst) follows the MISTIC Sphinx/Furo layout:
 installation, matrix-based concepts, eight guided tutorials, downloadable
@@ -36,17 +35,16 @@ python -m sphinx -W --keep-going -b html docs docs/_build/html
 ```
 
 See [build and validation instructions](docs/contributing.rst) for executable
-snippets, notebook checks, and manual Pages publication. The documentation
-explicitly separates the development API from the published 0.1.0a1 alpha.
+snippets, notebook checks, and manual Pages publication. The documentation includes executable examples for alpha 0.1.0a2.
 
 ## Install
 
 Requires Python 3.10 or later. Install the published alpha and its dependencies:
 
 ```bash
-python -m pip install Protspect==0.1.0a1
+python -m pip install Protspect==0.1.0a2
 # Optional scikit-learn integration:
-python -m pip install 'Protspect[ml]==0.1.0a1'
+python -m pip install 'Protspect[ml]==0.1.0a2'
 ```
 
 For development, install from the repository:
@@ -62,18 +60,18 @@ python -m pip install -e '.[dev]'
 The distribution is named `Protspect`. The unrelated `prospect` package is a
 different project.
 
-## Alternative transforms (development checkout)
+## Alternative transforms
 
 Fourier, circular Z, finite discrete Mellin, and discrete wavelet transforms now
 share `transform_sequence`, with a fixed-width `SequenceTransformer` for sklearn.
 See [definitions and examples](docs/TRANSFORMS.md). Wavelets require the optional
-`wavelets` extra. These additions are not yet in the published alpha.
+`wavelets` extra.
 
 ## Residue representations
 
-The development branch includes the ten Kidera factors (KF1–KF10), in addition
+Protspect includes the ten Kidera factors (KF1–KF10), in addition
 to the default BLOSUM100 embedding. See [representation documentation and
-citation](docs/REPRESENTATIONS.md). This addition is not in PyPI version 0.1.0a1.
+citation](docs/REPRESENTATIONS.md).
 
 ```python
 from protspect import SequenceSet
@@ -83,7 +81,7 @@ features = SequenceSet(embedding=kidera_factors(), compute_cross_spectra=False)
 features.from_sequence_list(["ACDE", "ACDF"], spectrum_length=8)
 ```
 
-AAindex1 files can also supply selected property channels (development version):
+AAindex1 files can also supply selected property channels:
 
 ```python
 from protspect.aaindex import AAIndex
@@ -111,11 +109,10 @@ See [matrix conversion and contact-potential interpretation](docs/AAINDEX_MATRIC
 
 ## One transform API
 
-The development API supports `method='fourier'|'z'|'mellin'|'wavelet'` throughout.
+The API supports `method='fourier'|'z'|'mellin'|'wavelet'` throughout.
 `SequenceSet` and `ComplexSet` remain primary interfaces for single and paired
 collections. All entry points share the same backend and feature exporter.
-These additions are not yet in PyPI 0.1.0a1; install this checkout, adding
-`.[wavelets]` for wavelets and `.[ml]` for sklearn.
+Install `Protspect[ml,wavelets]==0.1.0a2` for sklearn and wavelet support.
 
 ```python
 from protspect import SequenceSet, ComplexSet, transform_sequence
@@ -203,8 +200,8 @@ CI checks Python 3.10–3.15 on Linux, macOS, and Windows, installing both
 wheel and source archives into fresh environments outside the checkout. Exact
 minimum dependencies are checked on Python 3.10. See
 [the compatibility policy](docs/COMPATIBILITY.md) for scope and evidence. See [RELEASE_REVIEW.md](RELEASE_REVIEW.md) for findings,
-validation evidence, and the remaining release decisions. The initial alpha version is
-`0.1.0a1`. The [release record](docs/RELEASES.md) links the successful TestPyPI rehearsal
+validation evidence, and the remaining release decisions. The current alpha version is
+`0.1.0a2`. The [release record](docs/RELEASES.md) links the successful TestPyPI rehearsal
 and production download/install checks.
 
 ## Citation and project contact
@@ -212,7 +209,7 @@ and production download/install checks.
 Cite the software version and commit used:
 
 > Biomolecular Systems Modeling and Design Group. *Protspect: protein sequence
-> spectral analysis*. Version 0.1.0a1.
+> spectral analysis*. Version 0.1.0a2.
 > https://github.com/biomodsquad/protein-sequence-spectral-analysis
 
 Machine-readable metadata is in [CITATION.cff](CITATION.cff). Cite dataset

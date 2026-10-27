@@ -1,7 +1,6 @@
 # AAindex1 representations
 
-The development version supports local AAindex1 files. This feature is not in
-PyPI 0.1.0a1. This page describes scalar properties; see
+Protspect 0.1.0a2 supports local AAindex1 files. This page describes scalar properties; see
 [AAindex2/3 matrix profiles](AAINDEX_MATRICES.md) for substitution matrices and
 contact potentials. BLOSUM100 remains the default representation.
 

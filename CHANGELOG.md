@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0a2 — 2026-10-27
 
 - Add a Sphinx/Furo documentation site with eight guided tutorials, generated
   figures, API reference, three bundled executable notebooks, and docs CI.

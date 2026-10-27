@@ -1,28 +1,23 @@
 Getting started
 ===============
 
-Install the development API
----------------------------
+Install the alpha
+-----------------
 
-Use Python 3.10 or newer. The published alpha retains the older Fourier API;
-these tutorials use the unified development code. Clone the repository and
-install into a virtual environment:
+Use Python 3.10 or newer and a virtual environment:
 
 .. code-block:: bash
 
-   git clone https://github.com/biomodsquad/protein-sequence-spectral-analysis.git
-   cd protein-sequence-spectral-analysis
    python -m venv .venv
    # macOS/Linux:
    source .venv/bin/activate
    # Windows PowerShell instead: .venv\Scripts\Activate.ps1
-   python -m pip install -e '.[ml,wavelets,validation]'
+   python -m pip install 'Protspect[ml,wavelets]==0.1.0a2'
 
-Before the development changes are merged to main, check out the unified API /
-documentation branch or its corresponding pull request before installing.
 The core package needs NumPy, SciPy, and pandas. The ``ml`` extra adds sklearn;
 ``wavelets`` adds PyWavelets; ``validation`` adds plotting and research utilities.
-There are no implicit AAindex downloads.
+There are no implicit AAindex downloads. For an editable checkout, clone the
+repository and run ``python -m pip install -e '.[ml,wavelets,validation]'``.
 
 For notebooks also install:
 
@@ -31,9 +26,8 @@ For notebooks also install:
    python -m pip install jupyterlab nbformat nbclient ipykernel
    python -m jupyter lab
 
-For the published Fourier-only alpha, explicitly use
-``python -m pip install Protspect==0.1.0a1`` and its existing compatibility calls.
-Do not expect the development examples to run against that release.
+The first alpha, 0.1.0a1, retains the older Fourier API. The tutorials require
+0.1.0a2 or newer. Alpha APIs may change.
 
 Make your first table
 ---------------------

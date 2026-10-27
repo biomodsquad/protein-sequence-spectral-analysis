@@ -1,9 +1,9 @@
-# Unified sequence-transform API (unreleased)
+# Unified sequence-transform API
 
 Use `method='fourier'|'z'|'mellin'|'wavelet'` throughout the primary API.
 Every entry point uses the same embedding, numerical backend, coefficient-product
-rules, and feature exporter. The PyPI 0.1.0a1 release predates this API; install
-this checkout. Wavelets require `.[wavelets]`; sklearn requires `.[ml]`.
+rules, and feature exporter. This API is included in Protspect 0.1.0a2. Wavelets require the `wavelets`
+extra; sklearn requires the `ml` extra.
 
 | Work | Primary interface |
 | --- | --- |

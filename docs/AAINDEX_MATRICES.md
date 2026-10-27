@@ -1,7 +1,6 @@
 # AAindex2 and AAindex3 matrix profiles
 
-The development version supports all three AAindex file formats. These
-additions are not in published PyPI 0.1.0a1. BLOSUM100 remains the default;
+Protspect 0.1.0a2 supports all three AAindex file formats. BLOSUM100 remains the default;
 AAindex matrix conversion does not change Fourier calculations.
 
 ## Explicit downloads and offline catalogues

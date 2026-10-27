@@ -35,7 +35,7 @@ jobs:
           path: candidate/
       - name: Verify exact rehearsed artifacts against TestPyPI
         run: |
-          python ci/fetch_testpypi.py --version 0.1.0a1 --candidate-dir candidate --output-dir rehearsed
+          python ci/fetch_testpypi.py --version 0.1.0a2 --candidate-dir candidate --output-dir rehearsed
           python -c "from pathlib import Path; import shutil; Path('dist').mkdir(); [shutil.copy2(p, 'dist') for p in Path('rehearsed').iterdir() if p.name.endswith(('.whl', '.tar.gz'))]"
       - name: Validate artifacts before production upload
         env:
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/Protspect/0.1.0a1/
+      url: https://pypi.org/project/Protspect/0.1.0a2/
     permissions:
       id-token: write
     steps:
@@ -77,7 +77,7 @@ jobs:
         with:
           name: production-candidate
           path: candidate/
-      - run: python ci/fetch_testpypi.py --index pypi --version 0.1.0a1 --candidate-dir candidate --output-dir published
+      - run: python ci/fetch_testpypi.py --index pypi --version 0.1.0a2 --candidate-dir candidate --output-dir published
       - name: Test production downloads in fresh environments
         env:
           PIP_INDEX_URL: https://pypi.org/simple/
@@ -106,12 +106,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat > release-notes.md <<'EOF'
-          First Protspect alpha: Fourier spectral features for protein and peptide sequences.
+          Protspect 0.1.0a2: unified spectral transforms and expanded residue representations.
 
-          Install with `python -m pip install Protspect==0.1.0a1` or `python -m pip install 'Protspect[ml]==0.1.0a1'`.
+          Install with `python -m pip install Protspect==0.1.0a2` or `python -m pip install 'Protspect[ml]==0.1.0a2'`.
 
-          Includes corrected FFT frequency ordering and BLOSUM100 P/A score, normalization, fitted preprocessing, legacy FFTpro imports, and a reproducible CPP example. Recompute affected historical features and retrain downstream models. Alpha APIs may change.
+          Includes Kidera factors, AAindex1/2/3 adapters, Fourier/Z/Mellin/wavelet transforms, unified sequence and paired-chain collections, fitted sklearn pipelines, documentation, and bundled tutorial notebooks. Legacy Fourier adapters remain available. Alpha APIs may change.
 
           Published artifacts are exactly those validated in TestPyPI rehearsal run 40537066711 (candidate commit 5f18766). Production downloads were hash-verified and clean-install tested before creating this prerelease. See CHANGELOG.md and docs/TESTPYPI.md for details.
           EOF
-          gh release create v0.1.0a1 dist/* --target "${{ github.sha }}" --title 'Protspect 0.1.0a1' --prerelease --notes-file release-notes.md
+          gh release create v0.1.0a2 dist/* --target "${{ github.sha }}" --title 'Protspect 0.1.0a2' --prerelease --notes-file release-notes.md

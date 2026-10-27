@@ -1,7 +1,7 @@
-# Sequence transforms (unreleased)
+# Sequence transforms
 
-These APIs are available in this checkout; they are not in PyPI 0.1.0a1.
-Install with `python -m pip install -e '.[ml,wavelets]'` for every backend.
+These APIs are available in Protspect 0.1.0a2.
+Install with `python -m pip install 'Protspect[ml,wavelets]==0.1.0a2'` for every backend.
 PyWavelets is optional and imported only when wavelets are requested.
 
 ```python

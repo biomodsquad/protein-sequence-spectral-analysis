@@ -30,8 +30,8 @@ collections, paired chains, and fitted machine-learning pipelines.
 
 .. important::
 
-   This site documents the **development checkout**. PyPI ``Protspect==0.1.0a1``
-   predates Kidera, AAindex, alternative transforms, and the unified API.
+   This site documents **Protspect 0.1.0a2**, including Kidera, AAindex,
+   alternative transforms, and the unified API. Alpha APIs may change.
    Follow :doc:`getting_started` to install the code these tutorials use.
    The import is ``protspect``; it is separate from the language-model prototype
    and the unrelated ``prospect`` and ``ProSpect`` distributions.
