@@ -1,5 +1,7 @@
 # Protspect
 
+![Protspect logo](docs/_static/protspect-logo-spectrum.png)
+
 **Protein sequence spectral analysis**: transform features for proteins and
 peptides using numeric residue-property channels. This is the original sequence
 featurization method, separate from the subsequent protein language-model work.
@@ -8,6 +10,31 @@ The repository is `biomodsquad/protein-sequence-spectral-analysis`. The
 [PyPI distribution](https://pypi.org/project/Protspect/) is **Protspect**, imported as **`protspect`**. The original
 `ProSpect` distribution name conflicts with an unrelated existing PyPI package.
 Version `0.1.0a1` is the first published alpha; APIs may change.
+
+## Documentation and tutorials
+
+The [documentation source](docs/index.rst) follows the MISTIC Sphinx/Furo layout:
+installation, matrix-based concepts, eight guided tutorials, downloadable
+notebooks, and a public API reference. The supplied logo and matrix illustration
+introduce the residue embedding → zero-padding → sequence-axis transform workflow.
+
+Three self-contained notebooks are bundled in `protspect.examples`; locate them
+with `importlib.resources.files("protspect.examples")` and copy to a writable
+workspace. They cover matrix-to-feature calculations, four transforms and paired
+chains, and training-only sklearn pipelines. The full AMP MLP comparison and
+embedding atlas remain separate research examples with their documented inputs.
+
+Build a local site with:
+
+```sh
+python -m pip install -e '.[docs]'
+python -m docs.generate_tutorial_figures
+python -m sphinx -W --keep-going -b html docs docs/_build/html
+```
+
+See [build and validation instructions](docs/contributing.rst) for executable
+snippets, notebook checks, and manual Pages publication. The documentation
+explicitly separates the development API from the published 0.1.0a1 alpha.
 
 ## Install
 

@@ -203,3 +203,7 @@ validation/embedding_atlas/*.executed.ipynb
 
 # Local antimicrobial transform benchmark runs and predictions
 validation/amp_transform_mlp/
+
+# Documentation environment and generated previews
+.venv-docs/
+docs/_build/
