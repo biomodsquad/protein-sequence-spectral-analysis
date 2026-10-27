@@ -197,3 +197,6 @@ validation/compatibility-local/
 # Local atlas distance cache and bundled interactive viewer
 validation/embedding_atlas/pairwise_local.npz
 validation/embedding_atlas/interactive_atlas.html
+
+# Recomputable notebook outputs
+validation/embedding_atlas/*.executed.ipynb
