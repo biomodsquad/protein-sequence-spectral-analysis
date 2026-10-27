@@ -45,26 +45,36 @@ files cannot be replaced. Rerun only verification if an upload already succeeded
 metadata, exact environments, and test logs. Record the successful run URL and
 commit in this document after completion.
 
-## Status
+## Status — rehearsal passed
 
-[Rehearsal run 40537066711](https://github.com/biomodsquad/protein-sequence-spectral-analysis/actions/runs/40537066711)
-for commit `5f18766` passed the candidate job: build, Twine metadata checks,
-75 checkout tests, and fresh core/optional wheel and source installation tests.
-The local macOS CPython 3.12.2 rehearsal also passed both artifact checks.
+[Rehearsal run 40537066711, attempt 3](https://github.com/biomodsquad/protein-sequence-spectral-analysis/actions/runs/40537066711/attempts/3)
+passed candidate, publish, and verify jobs on 2026-10-27. The published
+candidate was built from commit `5f18766`; later commits document setup/results.
 
-The initial attempt failed with `invalid-publisher`. After account-side publisher
-registration, attempt 2 authenticated successfully but TestPyPI rejected upload
-with HTTP 400: the pending publisher's project name does not match the uploaded
-metadata name `Protspect` (spelled P-r-o-t-s-p-e-c-t). The expected project's JSON
-endpoint still returns 404. No distribution upload succeeded; verification was
-skipped.
+- TestPyPI: [Protspect 0.1.0a1](https://test.pypi.org/project/Protspect/0.1.0a1/).
+- Candidate job: 75 checkout tests, metadata validation, and clean wheel/source
+  installation checks passed.
+- Post-upload: SHA256-verified TestPyPI downloads matched the candidate exactly.
+  Fresh wheel and source installs each passed 74 optional-suite tests with one
+  expected Git-history skip, plus core-only tests, both examples, and plotting.
+  Dependencies were resolved only from production PyPI on CPython 3.12.15.
+- Published JSON metadata confirms name/version, group author/maintainer,
+  BSD-3-Clause license, Python >=3.10, dependency bounds, and project URLs.
+  The published README renders locally using `readme_renderer[md]`. TestPyPI's
+  page returned a client challenge to inspection tools, so visual page layout
+  has not been verified. Inspect the linked page manually.
+- No production PyPI upload, merge, tag, or GitHub release was performed.
 
-Check the registered project name in the TestPyPI account. Follow
-[PyPI's project-name mismatch instructions](https://docs.pypi.org/trusted-publishers/troubleshooting/#upload-errors)
-to remove an incorrectly created empty project and recreate the pending
-publisher for `Protspect`. Then rerun failed jobs for the same run to publish
-the already-tested candidate and perform post-upload verification. Do not
-describe the end-to-end rehearsal as complete until those checks pass.
+| Artifact | SHA256 |
+| --- | --- |
+| Wheel | `71d49afe8e14b51f1dc1aade429acfdddc7f74a6360d4e8109b0cd1db21bd7cc` |
+| Source archive | `3aa3edbe4c0c31c62bb2081546a67968e22c7d0e0aade77f7bb38a2398d47fe2` |
+
+Earlier attempts stopped before upload: first no matching publisher was
+registered; then the registered project name differed from `Protspect`. After
+correcting the account-side registration, attempt 3 succeeded. Do not rerun
+the publishing job for this version; uploaded files are immutable.
+
 
 The current candidate is `0.1.0a1`, approved for the initial alpha. Before a
 production release, recheck name availability and finish scientific/release
