@@ -43,7 +43,8 @@ def main():
                                       legendgroup=family, showlegend=panel == 0,
                                       text=rows.hover, hovertemplate='%{text}<extra></extra>',
                                       marker=dict(color=color, size=10 if reference else 5,
-                                                  symbol='star' if reference else 'circle',
+                                                  symbol={'BLOSUM100': 'star', 'Kidera': 'x'}.get(family, 'circle'),
+                                                  line=dict(color='black', width=0.5 if reference else 0),
                                                   opacity=1 if reference else .6)), row=row, col=col)
     highlights = []
     for row, col in [(1, 1), (1, 2), (2, 1), (2, 2)]:

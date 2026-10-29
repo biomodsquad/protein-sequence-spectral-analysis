@@ -4,6 +4,28 @@ BLOSUM100 remains the default. Kidera factors provide ten residue-level
 physicochemical channels, `KF1`–`KF10`, in published order, covering the 20
 canonical amino acids. No ambiguous-residue imputation is performed.
 
+## Kidera factor descriptions
+
+The atlas uses these property descriptions in hover text and tables; stable
+channel IDs remain `KF1`–`KF10`. These are conventional labels, not independent
+measurements of each named property. In particular, KF5–KF10 combine several
+properties and are named for their most heavily weighted component. See the
+[Peptides reference documentation](https://search.r-project.org/CRAN/refmans/Peptides/html/kideraFactors.html).
+
+| Factor | Property description |
+| --- | --- |
+| KF1 | Helix/bend preference |
+| KF2 | Side-chain size |
+| KF3 | Extended structure preference |
+| KF4 | Hydrophobicity |
+| KF5 | Double-bend preference |
+| KF6 | Partial specific volume |
+| KF7 | Flat extended preference |
+| KF8 | Occurrence in alpha region |
+| KF9 | Carboxyl-group pK (pK-C) |
+| KF10 | Surrounding hydrophobicity |
+
+
 ```python
 from protspect import SequenceSet
 from protspect.embeddings import kidera_factors

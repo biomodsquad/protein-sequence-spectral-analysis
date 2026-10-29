@@ -67,6 +67,7 @@ representations, explore :doc:`tutorials/embedding_atlas`.
 
    getting_started
    framework
+   embedding_atlas
    tutorials/index
    examples/index
    api/index

@@ -29,7 +29,23 @@ from protspect.embeddings import b100, kidera_factors
 
 ALPHABET = 'ARNDCQEGHILKMFPSTWYV'
 COLORS = {'AAindex1': '#4682b4', 'AAindex2': '#e69f00', 'AAindex3': '#009e73',
-          'BLOSUM100': '#cc3366', 'Kidera': '#762a83'}
+          'BLOSUM100': 'red', 'Kidera': 'purple'}
+
+
+# Conventional dominant-property labels; KF5–KF10 mix multiple properties.
+# https://search.r-project.org/CRAN/refmans/Peptides/html/kideraFactors.html
+KIDERA_DESCRIPTIONS = {
+    'KF1': 'Helix/bend preference',
+    'KF2': 'Side-chain size',
+    'KF3': 'Extended structure preference',
+    'KF4': 'Hydrophobicity',
+    'KF5': 'Double-bend preference',
+    'KF6': 'Partial specific volume',
+    'KF7': 'Flat extended preference',
+    'KF8': 'Occurrence in alpha region',
+    'KF9': 'Carboxyl-group pK (pK-C)',
+    'KF10': 'Surrounding hydrophobicity',
+}
 
 
 def unit_profile(values):
@@ -111,7 +127,9 @@ def load_inputs(paths):
                [entry.values[a] for a in ALPHABET], entry.accession)
     for family, mapping in [('BLOSUM100', b100), ('Kidera', kidera_factors())]:
         for name, channel in mapping.items():
-            vector(f'{family}:{name}', family, name, [channel[a] for a in ALPHABET], family)
+            description = KIDERA_DESCRIPTIONS[name] if family == 'Kidera' else name
+            vector(f'{family}:{name}', family, description,
+                   [channel[a] for a in ALPHABET], family)
         e = np.array([[channel[a] for channel in mapping.values()] for a in ALPHABET])
         representation(family, family, family, e, 'builtin', square=family == 'BLOSUM100')
     # An explicitly labelled reference family; normalized-channel CKA prevents raw units dominating.
@@ -187,8 +205,9 @@ def scatter(ax, coords, table, title, variance=None):
             continue
         reference = family in ('BLOSUM100', 'Kidera')
         ax.scatter(*coords[rows].T, s=65 if reference else 13, c=color,
-                   alpha=1 if reference else .55, marker='*' if reference else 'o',
-                   label=f'{family} (n={len(rows)})', edgecolors='none', zorder=4 if reference else 2)
+                   alpha=1 if reference else .55, marker={'BLOSUM100': '*', 'Kidera': 'X'}.get(family, 'o'),
+                   label=f'{family} (n={len(rows)})', edgecolors='black' if reference else 'none',
+                   linewidths=0.5 if reference else 0, zorder=4 if reference else 2)
     ax.set_title(title, fontsize=11)
     ax.set_xlabel(f'PC1 ({variance[0]:.1%})' if variance else 'UMAP 1')
     ax.set_ylabel(f'PC2 ({variance[1]:.1%})' if variance else 'UMAP 2')

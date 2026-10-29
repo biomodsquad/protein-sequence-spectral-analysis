@@ -22,7 +22,7 @@ class Page(HTMLParser):
         if tag == 'a' and 'name' in attrs:
             self.anchors.add(attrs['name'])
         attribute = {'a': 'href', 'link': 'href', 'img': 'src', 'script': 'src',
-                     'form': 'action'}.get(tag)
+                     'iframe': 'src', 'form': 'action'}.get(tag)
         if attribute and attrs.get(attribute):
             self.links.append(attrs[attribute])
 

@@ -3,7 +3,7 @@ include RELEASE_REVIEW.md
 recursive-include examples *.py *.ipynb
 recursive-include protspect/examples *.ipynb
 include validation/README.md
-recursive-include docs *.md *.rst *.py *.css *.svg *.png Makefile
+recursive-include docs *.md *.rst *.py *.css *.svg *.png *.html *.js *.json Makefile
 prune docs/_build
 recursive-include research *.md *.py *.ipynb *.json *.in *.txt
 prune research/.jupyter
