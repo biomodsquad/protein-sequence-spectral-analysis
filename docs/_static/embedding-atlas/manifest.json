@@ -1,0 +1,53 @@
+{
+  "plotly_version": "5.24.1",
+  "figures": [
+    {
+      "file": "vector-pca.html",
+      "title": "Individual-channel PCA",
+      "sha256": "b197a685c380a357d1a6f7ea6732b1568672927afec135e54ebd80144fc37299"
+    },
+    {
+      "file": "vector-umap.html",
+      "title": "Individual channels: UMAP",
+      "sha256": "e9c90952e95911562b5fddc5342a71928317c115438c871938a58cdfd538aec7"
+    },
+    {
+      "file": "whole-pca.html",
+      "title": "Whole residue-geometry PCA",
+      "sha256": "23922d24df924bc358b581ceeadaa5d6865e2cf2871370daa8c706a5373def9e"
+    },
+    {
+      "file": "whole-umap.html",
+      "title": "Whole residue geometry: UMAP",
+      "sha256": "e2fcd4da3478ac19156e95c2e25a3a7c02bdbc59376b773bc18eaf3a083e5a7d"
+    },
+    {
+      "file": "cka-heatmap.html",
+      "title": "Whole representations: original-space CKA with dendrograms",
+      "sha256": "9708b4e8ebc51772c7db251e2a6abf825559708ef8582710e787a0e36b056c40"
+    },
+    {
+      "file": "channel-matrix.html",
+      "title": "BLOSUM100: 20/20 channels displayed",
+      "sha256": "0b7726c6856d19a94644bcdaca09df865e89558c64aa9d5235118d884ba773b5"
+    },
+    {
+      "file": "matrix-pca.html",
+      "title": "Signed aligned matrix-score PCA",
+      "sha256": "7c4cbdad88a8fb121f67f7df353fe8b382115526f0bc10358049a2249d806355"
+    }
+  ],
+  "executed_notebook_sha256": "19b79369b21b8d6fc44cfe268416bd53bcab538db65ceb7d927dfc39cd3a8ae1",
+  "sources": {
+    "research/embedding_atlas/Embedding_atlas.ipynb": "1675b1ad5a1691196bbda2bd7219e6982d71a11669235ede1562d199ab770033",
+    "research/embedding_atlas/analyze.py": "61a3ae353610b41ef872944d7ad0ea48e242492cd1dd1f3d72e2b30b4551c354",
+    "research/embedding_atlas/explore.py": "3392a2639c84934bf54f4931f3941751780d02d1287ee058991d5065fa713aff",
+    "research/embedding_atlas/execute_notebook.py": "abd0a5632d08d01766d1d32b32d74c439db6d60d6d3cbb153050848999bb3c20",
+    "research/embedding_atlas/export_docs.py": "ddafe903302b4c1758a60aa7178da9835853ef10e25f28fb807edef2387249b9"
+  },
+  "aaindex_sha256": {
+    "aaindex1": "560f102dbee8ca9837186c4b2b93e253ea6efc58c88617234cef4e54bd61f676",
+    "aaindex2": "d3eb30c075452aa737b111a3d127358d0b669d0e847fca967b253a05c7796aa9",
+    "aaindex3": "8c9b9b0e7b7937b4674585b25f3f9370499f219b2583b1204fc9a0a5f06b1671"
+  }
+}

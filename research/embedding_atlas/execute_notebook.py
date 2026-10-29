@@ -14,6 +14,8 @@ def main():
     """Keep kernel caches local and preserve earlier executed notebooks."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--plotly-json', action='store_true',
+                        help='Capture Plotly figure JSON for documentation export')
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError('Choose a new output notebook to preserve the earlier execution')
@@ -36,6 +38,11 @@ def main():
     environment.update(NUMBA_NUM_THREADS='1',OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',
                        PYDEVD_DISABLE_FILE_VALIDATION='1')
     notebook = nbformat.read(Path(__file__).with_name('Embedding_atlas.ipynb'),as_version=4)
+    if args.plotly_json:
+        for cell in notebook.cells:
+            if cell.cell_type == 'code':
+                cell.source = cell.source.replace('pio.renderers.default = "notebook"',
+                                                  'pio.renderers.default = "plotly_mimetype"')
     # Kernel discovery occurs in the parent process before the subprocess inherits env.
     old = os.environ.get('JUPYTER_PATH')
     os.environ['JUPYTER_PATH'] = environment['JUPYTER_PATH']

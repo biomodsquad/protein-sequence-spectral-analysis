@@ -145,7 +145,8 @@ def scatter(coordinates, table, *, title, x_label='Dimension 1', y_label='Dimens
                                   hovertemplate='%{text}<extra></extra>',
                                   marker=dict(color=color,size=reference_size if reference else marker_size,
                                               opacity=1 if reference else opacity,
-                                              symbol='star' if reference else 'circle')))
+                                              symbol={'BLOSUM100': 'star', 'Kidera': 'x'}.get(family, 'circle'),
+                                              line=dict(color='black', width=0.5 if reference else 0))))
     fig.update_layout(template='plotly_white',height=height,title=title,
                       xaxis_title=x_label,yaxis_title=y_label)
     return fig
@@ -205,3 +206,65 @@ def aligned_matrix_features(representations):
     features = np.array([unit_profile(item['embedding'].ravel()) for item in chosen])
     table = pd.DataFrame([{k:v for k,v in item.items() if k != 'embedding'} for item in chosen])
     return table,features
+
+
+def cka_clustermap(similarity, table, tree, *, colorscale='Viridis',
+                   color_range=(0.0, 1.0), height=850, show_labels=False,
+                   dendrogram_fraction=0.20):
+    """Show original-space CKA with aligned row/column linkage dendrograms.
+
+    ``tree`` must be fitted to sqrt(2 * (1 - CKA)) in the same input order.
+    Both axes use its leaf order; branch heights remain linkage distances.
+    """
+    from scipy.cluster.hierarchy import dendrogram
+    from plotly.subplots import make_subplots
+
+    if not 0 < dendrogram_fraction < 0.5:
+        raise ValueError('dendrogram_fraction must lie between 0 and 0.5')
+    similarity = np.asarray(similarity)
+    if similarity.shape != (len(table), len(table)):
+        raise ValueError('similarity must be square and match the table')
+    branches = dendrogram(tree, no_plot=True)
+    order = np.asarray(branches['leaves'])
+    labels = table.id.iloc[order].to_numpy()
+    fig = make_subplots(rows=2, cols=2, specs=[[None, {}], [{}, {}]],
+                        column_widths=[dendrogram_fraction, 1-dendrogram_fraction],
+                        row_heights=[dendrogram_fraction, 1-dendrogram_fraction],
+                        horizontal_spacing=0.015, vertical_spacing=0.015)
+    # SciPy places leaf centers at 5, 15, ...; map them onto heatmap indices.
+    positions, distances = [], []
+    for position, distance in zip(branches['icoord'], branches['dcoord']):
+        positions.extend([value/10-0.5 for value in position] + [None])
+        distances.extend(distance + [None])
+    style = dict(mode='lines', line=dict(color='#555555', width=1),
+                 showlegend=False, hoverinfo='skip')
+    fig.add_trace(go.Scatter(x=positions, y=distances, **style), row=1, col=2)
+    fig.add_trace(go.Scatter(x=distances, y=positions, **style), row=2, col=1)
+    row_labels = np.broadcast_to(labels[:, None], (len(order), len(order)))
+    column_labels = np.broadcast_to(labels[None, :], row_labels.shape)
+    fig.add_trace(go.Heatmap(z=similarity[np.ix_(order, order)],
+                            x=np.arange(len(order)), y=np.arange(len(order)),
+                            customdata=np.stack([row_labels, column_labels], axis=-1),
+                            zmin=color_range[0], zmax=color_range[1], colorscale=colorscale,
+                            colorbar_title='CKA',
+                            hovertemplate='%{customdata[0]}<br>%{customdata[1]}'
+                                          '<br>CKA=%{z:.4f}<extra></extra>'), row=2, col=2)
+    extent = [-0.5, len(order)-0.5]
+    maximum = float(np.max(tree[:, 2]))
+    branch_extent = max(maximum*1.05, 1e-6)
+    fig.update_xaxes(range=extent, showticklabels=False, row=1, col=2)
+    fig.update_yaxes(range=[0, branch_extent], title_text='Linkage distance', row=1, col=2)
+    fig.update_xaxes(range=[branch_extent, 0], title_text='Linkage distance', row=2, col=1)
+    fig.update_yaxes(range=extent[::-1], showticklabels=False, row=2, col=1)
+    fig.update_xaxes(range=extent, tickmode='array', tickvals=np.arange(len(order)),
+                     ticktext=labels, showticklabels=show_labels, tickangle=-90, row=2, col=2)
+    fig.update_yaxes(range=extent[::-1], tickmode='array', tickvals=np.arange(len(order)),
+                     ticktext=labels, showticklabels=show_labels, side='right', row=2, col=2)
+    # Match the leaf axes so zooming keeps trees aligned with the heatmap.
+    fig.update_xaxes(matches='x3', row=1, col=2)
+    fig.update_yaxes(matches='y3', row=2, col=1)
+    fig.update_xaxes(showgrid=False, zeroline=False)
+    fig.update_yaxes(showgrid=False, zeroline=False)
+    fig.update_layout(template='plotly_white', height=height,
+                      title='Whole representations: original-space CKA with dendrograms')
+    return fig
